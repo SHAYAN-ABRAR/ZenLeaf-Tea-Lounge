@@ -14,9 +14,9 @@
 <div class="container menu-layout">
   <div class="menu-filters">
     <nav class="chip-row" aria-label="Menu categories">
-      <a class="chip" href="{% query_with category=None page=None %}"{% if not active_category %} aria-current="true"{% endif %}>All</a>
+      <a class="chip" href="{% query_with category=None page=None %}" data-category=""{% if not active_category %} aria-current="true"{% endif %}>All</a>
       {% for category in categories %}
-      <a class="chip" href="{% query_with category=category.slug %}"{% if active_category == category %} aria-current="true"{% endif %}>{{ category.name }}</a>
+      <a class="chip" href="{% query_with category=category.slug %}" data-category="{{ category.slug }}"{% if active_category == category %} aria-current="true"{% endif %}>{{ category.name }}</a>
       {% endfor %}
     </nav>
     <form class="search-form" method="get" action="{% url 'lounge:menu' %}" role="search" data-menu-filters>
@@ -34,6 +34,7 @@
     </form>
   </div>
 
+  {% block menu_results %}
   {% if unknown_category %}
   <div class="alert alert--info" role="status">{% icon 'info' %}<p>That category isn't on the menu, so all items are shown.</p></div>
   {% endif %}
@@ -77,5 +78,6 @@
     </div>
     {% endfor %}
   {% endif %}
+  {% endblock %}
 </div>
 {% endblock %}

@@ -32,6 +32,7 @@
       </div>
       <a class="link-arrow" href="{% url 'lounge:menu' %}">See the full menu {% icon 'arrow-right' %}</a>
     </div>
+    {% block featured %}
     {% if featured %}
     <div class="product-grid">
       {% for product in featured %}{% include "lounge/partials/product_card.html" %}{% endfor %}
@@ -44,9 +45,11 @@
       <a class="btn btn--secondary" href="{% url 'lounge:menu' %}">Browse the menu</a>
     </div>
     {% endif %}
+    {% endblock %}
   </div>
 </section>
 
+{% block categories %}
 {% if categories %}
 <section class="section section--tinted" aria-labelledby="categories-title">
   <div class="container">
@@ -70,6 +73,7 @@
   </div>
 </section>
 {% endif %}
+{% endblock %}
 
 <section class="section" aria-labelledby="how-title">
   <div class="container">

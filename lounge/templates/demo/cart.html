@@ -1,0 +1,12 @@
+{% extends "lounge/base.html" %}
+{% block title %}Your cart · ZenLeaf Tea Lounge{% endblock %}
+{% block demo_page %}cart{% endblock %}
+{% block content %}
+<div class="page-head page-head--compact">
+  <div class="container">
+    <h1 tabindex="-1" data-page-heading>Your cart</h1>
+  </div>
+</div>
+<div class="container" data-cart-view><p class="muted">Loading your cart…</p></div>
+<p class="visually-hidden" aria-live="polite" data-cart-live></p>
+{% endblock %}

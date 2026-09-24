@@ -1,0 +1,36 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Table request{% endblock %}
+{% block demo_page %}staff-reservation{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="{% url 'staff:reservations' %}">Table requests</a></li><li><span aria-current="page" data-crumb>Request</span></li></ol></nav>
+<div class="empty-state" data-missing hidden>
+  {% icon 'search' 'empty-state__icon' %}
+  <h1>This request isn't in the demo</h1>
+  <p>Table requests are saved in the browser they were made in. It may also have been cleared by a reset.</p>
+  <a class="btn btn--secondary" href="{% url 'staff:reservations' %}?status=all&amp;when=all">Show every request</a>
+</div>
+<div data-found hidden>
+  <div class="staff-head">
+    <div>
+      <h1 data-heading>Request</h1>
+      <p class="muted" data-subheading></p>
+    </div>
+    <a class="btn btn--quiet btn--small" href="{% url 'lounge:home' %}" data-guest-link>Guest's request page {% icon 'arrow-right' %}</a>
+  </div>
+  <div class="staff-columns">
+    <section class="panel" aria-labelledby="details-title">
+      <h2 id="details-title">Details</h2>
+      <dl class="facts" data-details></dl>
+    </section>
+    <section class="panel" aria-labelledby="decide-title">
+      <h2 id="decide-title">Update request</h2>
+      <form novalidate data-demo-form="reservation-update">
+        {% include "lounge/partials/field.html" with field=form.status %}
+        {% include "lounge/partials/field.html" with field=form.guest_message %}
+        <button class="btn btn--block" type="submit">Save</button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}

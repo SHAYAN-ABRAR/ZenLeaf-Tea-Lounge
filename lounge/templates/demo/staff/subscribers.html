@@ -1,0 +1,11 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Newsletter subscribers{% endblock %}
+{% block demo_page %}staff-subscribers{% endblock %}
+{% block content %}
+<div class="staff-head">
+  <div><h1>Newsletter subscribers</h1><p class="muted" data-subscriber-total>Loading…</p></div>
+  <button class="btn btn--secondary" type="button" data-export hidden>{% icon 'download' %}Download CSV</button>
+</div>
+<div data-subscribers-table></div>
+{% endblock %}

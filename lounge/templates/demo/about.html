@@ -1,22 +1,25 @@
 {% extends "lounge/base.html" %}
 {% load lounge_tags %}
 {% block title %}About this demo · ZenLeaf Tea Lounge{% endblock %}
+{% block demo_page %}about{% endblock %}
 {% block content %}
 <div class="page-head page-head--compact">
   <div class="container">
     <p class="eyebrow">About</p>
     <h1>About this demo</h1>
-    <p class="lede">ZenLeaf Tea Lounge is a working example of a small café website: a real menu database, a cart, guest checkout, table requests and a staff area. The business itself is imaginary.</p>
+    <p class="lede">ZenLeaf Tea Lounge is a working example of a small café website: a menu, a cart, guest checkout, table requests and a staff area. The business itself is imaginary.</p>
   </div>
 </div>
 <div class="container prose-layout">
   <article class="prose">
-    <h2>What works</h2>
+    <h2>How this online demo works</h2>
     <ul>
-      <li>The menu, cart, orders, table requests, contact messages and newsletter sign-ups are stored in a SQLite database on the server.</li>
-      <li>Orders and table requests get a reference number and a private status page that updates when staff change the status.</li>
-      <li>Staff sign in to manage the menu and availability, update orders and table requests, and read messages.</li>
+      <li>This edition runs entirely in your browser. It's hosted on GitHub Pages, which serves files but can't run a server or a database.</li>
+      <li>Your cart, orders, table requests, messages and newsletter sign-ups are saved in this browser's local storage. They aren't sent anywhere, other visitors can't see them, and they stay until you reset the demo or clear your browser data.</li>
+      <li>The staff area is open to everyone here, so you can try both sides: place an order, update it as staff, and watch the order page change.</li>
     </ul>
+    <h2>The full version</h2>
+    <p>The same site also runs as a Django application with a SQLite database on the server. There, orders from every guest arrive in one place and staff sign in with a password. The <a href="https://github.com/SHAYAN-ABRAR/ZenLeaf-Tea-Lounge">source code and setup steps</a> are on GitHub.</p>
     <h2>What's illustrative</h2>
     <ul>
       <li>The teas, prices and availability are examples. Descriptions cover how each style of tea generally tastes; they make no claims about origin or sourcing.</li>
@@ -24,13 +27,14 @@
       <li>No payment is taken, and no emails or texts are sent. The newsletter list is stored but never mailed.</li>
       <li>There are no customer reviews or ratings on this site, because there are no real customers.</li>
     </ul>
-    <h2>Your data in this demo</h2>
-    <p>Anything you enter stays in the local database of whoever runs this copy of the site. Use made-up details if you're just trying it out.</p>
+    <h2>Start over</h2>
+    <p>Resetting clears everything this demo saved in your browser and restores the original menu.</p>
+    {% include "demo/partials/reset.html" %}
     <h2>Credits</h2>
     <ul>
       <li>Illustrations, icons and copy were made for this project.</li>
       <li>Typefaces: <a href="https://github.com/undercasetype/Fraunces">Fraunces</a> and <a href="https://github.com/sharanda/manrope">Manrope</a>, both under the SIL Open Font License 1.1. The license files are included with the font files.</li>
-      <li>Built with <a href="https://www.djangoproject.com/">Django</a> and <a href="https://whitenoise.readthedocs.io/">WhiteNoise</a>.</li>
+      <li>The full version is built with <a href="https://www.djangoproject.com/">Django</a> and <a href="https://whitenoise.readthedocs.io/">WhiteNoise</a>.</li>
       <li>An earlier static version of this site, which is still in the repository's history, used a third-party template and product photos. None of that design, imagery or copy is used here.</li>
     </ul>
   </article>
@@ -40,7 +44,7 @@
       <li><a href="{% url 'lounge:menu' %}">Browse the menu {% icon 'arrow-right' %}</a></li>
       <li><a href="{% url 'lounge:reserve' %}">Request a table {% icon 'arrow-right' %}</a></li>
       <li><a href="{% url 'lounge:contact' %}">Send a message {% icon 'arrow-right' %}</a></li>
-      <li><a href="{% url 'staff:dashboard' %}">Staff sign-in {% icon 'arrow-right' %}</a></li>
+      <li><a href="{% url 'staff:dashboard' %}">Open the staff area {% icon 'arrow-right' %}</a></li>
     </ul>
   </aside>
 </div>

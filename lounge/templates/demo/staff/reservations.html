@@ -1,0 +1,18 @@
+{% extends "staff/base.html" %}
+{% block title %}Table requests{% endblock %}
+{% block demo_page %}staff-reservations{% endblock %}
+{% block content %}
+<div class="staff-head"><div><h1>Table requests</h1><p class="muted">Confirm or decline requests. Guests see the result on their request page.</p></div></div>
+<form class="filter-bar" method="get">
+  <div class="filter-bar__field">
+    <label for="res-status">Status</label>
+    <select id="res-status" name="status" data-auto-submit>{% for key, label in statuses %}<option value="{{ key }}">{{ label }}</option>{% endfor %}</select>
+  </div>
+  <div class="filter-bar__field">
+    <label for="res-when">Date</label>
+    <select id="res-when" name="when" data-auto-submit>{% for key, label in whens %}<option value="{{ key }}">{{ label }}</option>{% endfor %}</select>
+  </div>
+  <button class="btn btn--secondary" type="submit">Filter</button>
+</form>
+<div data-reservations-table><p class="muted">Loading…</p></div>
+{% endblock %}

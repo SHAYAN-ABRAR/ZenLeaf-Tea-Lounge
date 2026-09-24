@@ -1,0 +1,10 @@
+{% extends "staff/base.html" %}
+{% block title %}Messages{% endblock %}
+{% block demo_page %}staff-messages{% endblock %}
+{% block content %}
+<div class="staff-head"><div><h1>Messages</h1><p class="muted">Submissions from the contact form.</p></div></div>
+<nav class="chip-row" aria-label="Filter messages">
+  {% for key, label in filters %}<a class="chip" href="?state={{ key }}" data-state="{{ key }}">{{ label }}</a>{% endfor %}
+</nav>
+<div data-messages-list><p class="muted">Loading…</p></div>
+{% endblock %}

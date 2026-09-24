@@ -1,0 +1,7 @@
+{% extends "lounge/reserve.html" %}
+{% block demo_page %}reserve{% endblock %}
+{% block reserve_steps %}
+      <li>Your request is saved in this browser with a reference number and the status <strong>Pending</strong>.</li>
+      <li>In this online demo you confirm or decline it yourself, in the <a href="{% url 'staff:reservations' %}">staff area</a>.</li>
+      <li>Your request page shows the current status and any note from staff.</li>
+{% endblock %}

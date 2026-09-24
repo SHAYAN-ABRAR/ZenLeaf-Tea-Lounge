@@ -1,0 +1,36 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Products{% endblock %}
+{% block demo_page %}staff-products{% endblock %}
+{% block content %}
+<div class="staff-head">
+  <div>
+    <h1>Products</h1>
+    <p class="muted">Turn items on and off the menu, mark them sold out, or edit their details.</p>
+  </div>
+  <a class="btn" href="{% url 'staff:product_new' %}">{% icon 'plus' %}Add product</a>
+</div>
+
+<form class="filter-bar" method="get" action="{% url 'staff:products' %}">
+  <div class="filter-bar__field">
+    <label for="product-q">Search</label>
+    <input id="product-q" type="search" name="q" maxlength="60">
+  </div>
+  <div class="filter-bar__field">
+    <label for="product-state">Show</label>
+    <select id="product-state" name="state" data-auto-submit>
+      {% for key, label in states %}<option value="{{ key }}">{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="filter-bar__field">
+    <label for="product-category">Category</label>
+    <select id="product-category" name="category" data-auto-submit>
+      <option value="">All categories</option>
+      {% for c in categories %}<option value="{{ c.slug }}">{{ c.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <button class="btn btn--secondary" type="submit">Filter</button>
+</form>
+
+<div data-products-table><p class="muted">Loading…</p></div>
+{% endblock %}

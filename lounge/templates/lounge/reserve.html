@@ -36,9 +36,11 @@
   <aside class="side-note">
     <h2>What happens next</h2>
     <ol class="steps steps--compact">
+      {% block reserve_steps %}
       <li>Your request is saved with a reference number and the status <strong>Pending</strong>.</li>
       <li>Staff confirm or decline it in the staff area.</li>
       <li>Your request page shows the current status and any note from staff. Keep its address.</li>
+      {% endblock %}
     </ol>
     <p class="muted">This demo doesn't send confirmation emails or texts.</p>
   </aside>

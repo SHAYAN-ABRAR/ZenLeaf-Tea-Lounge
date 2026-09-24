@@ -265,6 +265,9 @@ main:focus { outline: none; }
 /* 7 Messages and notices */
 .flash-stack { display: grid; gap: 10px; margin-top: 20px; }
 .staff-main > .flash-stack { margin: 0 0 20px; }
+.demo-staff-note { margin-bottom: 20px; }
+.demo-reset { margin-top: 24px; }
+.demo-reset .confirm-details { margin-top: 12px; }
 .alert {
   display: flex; gap: 12px; align-items: flex-start;
   padding: 14px 16px; border-radius: var(--radius); border: 1px solid transparent;

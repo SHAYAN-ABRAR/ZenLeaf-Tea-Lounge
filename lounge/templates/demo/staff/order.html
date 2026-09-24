@@ -1,0 +1,39 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Order{% endblock %}
+{% block demo_page %}staff-order{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="{% url 'staff:orders' %}">Orders</a></li><li><span aria-current="page" data-crumb>Order</span></li></ol></nav>
+<div class="empty-state" data-missing hidden>
+  {% icon 'search' 'empty-state__icon' %}
+  <h1>This order isn't in the demo</h1>
+  <p>Orders are saved in the browser they were placed in. It may also have been cleared by a reset.</p>
+  <a class="btn btn--secondary" href="{% url 'staff:orders' %}?status=all">Show all orders</a>
+</div>
+<div data-found hidden>
+  <div class="staff-head">
+    <div>
+      <h1 data-heading>Order</h1>
+      <p class="muted" data-subheading></p>
+    </div>
+    <a class="btn btn--quiet btn--small" href="{% url 'lounge:home' %}" data-guest-link>Guest's status page {% icon 'arrow-right' %}</a>
+  </div>
+  <div class="staff-columns">
+    <section class="panel" aria-labelledby="items-title">
+      <h2 id="items-title">Items</h2>
+      <div data-items></div>
+      <h2>Guest</h2>
+      <dl class="facts" data-guest></dl>
+    </section>
+    <section class="panel" aria-labelledby="update-title">
+      <h2 id="update-title">Update status</h2>
+      <form novalidate data-demo-form="order-update">
+        {% include "lounge/partials/field.html" with field=form.status %}
+        {% include "lounge/partials/field.html" with field=form.staff_note %}
+        <p class="muted small">The guest sees the new status on their status page. The internal note is only visible here.</p>
+        <button class="btn btn--block" type="submit">Save status</button>
+      </form>
+    </section>
+  </div>
+</div>
+{% endblock %}

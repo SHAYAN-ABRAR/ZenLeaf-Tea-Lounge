@@ -1,0 +1,33 @@
+{% extends "lounge/base.html" %}
+{% load lounge_tags %}
+{% block title %}Checkout · ZenLeaf Tea Lounge{% endblock %}
+{% block demo_page %}checkout{% endblock %}
+{% block content %}
+<div class="page-head page-head--compact">
+  <div class="container">
+    <p class="eyebrow">Guest checkout</p>
+    <h1>Your details</h1>
+    <p class="lede">No account and no card details. Staff use your name to hand over the order.</p>
+  </div>
+</div>
+<div class="container checkout-layout">
+  <form class="form-card" novalidate data-demo-form="checkout">
+    {% include "lounge/partials/field.html" with field=form.customer_name %}
+    {% include "lounge/partials/field.html" with field=form.email %}
+    {% include "lounge/partials/field.html" with field=form.phone %}
+    {% include "lounge/partials/field.html" with field=form.notes %}
+    {% include "lounge/partials/honeypot.html" %}
+    <div class="notice">
+      {% icon 'info' %}
+      <p>This is a demo: placing an order saves it in this browser. No payment is taken and no email is sent.</p>
+    </div>
+    <button class="btn btn--large btn--block" type="submit" data-place-order>Place order</button>
+  </form>
+
+  <aside class="summary-card" aria-labelledby="order-summary-title">
+    <h2 id="order-summary-title">Your order</h2>
+    <div data-checkout-summary><p class="muted">Loading…</p></div>
+    <a class="link-arrow link-arrow--back" href="{% url 'lounge:cart' %}">{% icon 'arrow-left' %} Change your cart</a>
+  </aside>
+</div>
+{% endblock %}

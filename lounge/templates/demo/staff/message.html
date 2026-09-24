@@ -1,0 +1,7 @@
+{% extends "staff/base.html" %}
+{% block title %}Message{% endblock %}
+{% block demo_page %}staff-message{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="{% url 'staff:messages' %}">Messages</a></li><li><span aria-current="page" data-crumb>Message</span></li></ol></nav>
+<div data-message-view><p class="muted">Loading…</p></div>
+{% endblock %}

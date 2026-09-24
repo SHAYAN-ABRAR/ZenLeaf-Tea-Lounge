@@ -1,5 +1,5 @@
 {% load static lounge_tags %}<!doctype html>
-<html lang="en">
+<html lang="en"{% if demo %} data-demo{% endif %}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,14 +12,20 @@
   <link rel="stylesheet" href="{% static 'lounge/css/site.css' %}">
   <script src="{% static 'lounge/js/early.js' %}"></script>
   <script src="{% static 'lounge/js/site.js' %}" defer></script>
+  {% if demo %}<script src="{% static 'lounge/js/demo-data.js' %}" defer></script>
+  <script src="{% static 'lounge/js/demo.js' %}" defer></script>{% endif %}
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body class="{% block body_class %}{% endblock %}"{% if demo %} data-page="{% block demo_page %}{% endblock %}"{% endif %}>
   <a class="skip-link" href="#main">Skip to main content</a>
   {% block site_header %}
   <section class="demo-bar" aria-label="Demo notice">
     <div class="container demo-bar__inner">
       {% icon 'info' %}
+      {% if demo %}
+      <p><strong>Online demo.</strong> <span class="demo-bar__long">Everything you do here is saved only in this browser. The menu and prices are illustrative, and no payments are taken.</span><span class="demo-bar__short">Saved in this browser only; no payments.</span> <a href="{% url 'lounge:about' %}">About this demo</a></p>
+      {% else %}
       <p><strong>Demo project.</strong> <span class="demo-bar__long">The menu, prices and availability are illustrative. Orders and table requests are saved in a local database, and no payments are taken.</span><span class="demo-bar__short">Illustrative menu; no payments are taken.</span> <a href="{% url 'lounge:about' %}">About this demo</a></p>
+      {% endif %}
     </div>
   </section>
   <header class="site-header">
@@ -51,6 +57,10 @@
   {% endblock %}
 
   <main id="main" tabindex="-1">
+    {% if demo %}
+    <noscript><div class="container flash-stack"><div class="alert alert--info"><p>This online demo needs JavaScript, because it keeps its data in your browser. The full version of the site works without it.</p></div></div></noscript>
+    <div class="container flash-stack" data-flash hidden></div>
+    {% endif %}
     {% if messages %}
     <div class="container flash-stack">
       {% for message in messages %}
@@ -71,7 +81,11 @@
         <h2 class="site-footer__title" id="footer-title">
           <img src="{% static 'lounge/img/logo.svg' %}" alt="" width="32" height="32"> ZenLeaf Tea Lounge
         </h2>
+        {% if demo %}
+        <p>A demonstration tea lounge. This online demo runs in your browser; the full version uses Django and SQLite. There's no physical location, and the menu and prices are examples.</p>
+        {% else %}
         <p>A demonstration tea lounge built with Django and SQLite. There's no physical location; the menu and prices are examples.</p>
+        {% endif %}
       </section>
       <nav class="site-footer__nav" aria-label="Footer">
         <h2 class="site-footer__heading">Visit</h2>
@@ -86,16 +100,18 @@
         <h2 class="site-footer__heading">Project</h2>
         <ul>
           <li><a href="{% url 'lounge:about' %}">About this demo</a></li>
-          <li><a href="{% url 'staff:dashboard' %}">Staff sign-in</a></li>
+          <li><a href="{% url 'staff:dashboard' %}">{% if demo %}Staff area{% else %}Staff sign-in{% endif %}</a></li>
         </ul>
       </nav>
       <section class="site-footer__newsletter" aria-labelledby="newsletter-title">
         <h2 class="site-footer__heading" id="newsletter-title">Newsletter</h2>
-        <p>Sign up for occasional news. This demo stores your address but never sends email.</p>
+        <p>Sign up for occasional news. This demo {% if demo %}saves your address in this browser{% else %}stores your address{% endif %} but never sends email.</p>
         {% with form=footer_newsletter_form %}
-        <form class="newsletter-form" method="post" action="{% url 'lounge:newsletter' %}" novalidate data-newsletter-form>
+        <form class="newsletter-form"{% if not demo %} method="post" action="{% url 'lounge:newsletter' %}"{% endif %} novalidate data-newsletter-form>
+          {% if not demo %}
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          {% endif %}
           <input type="hidden" name="source" value="footer">
           <label class="newsletter-form__label" for="{{ form.email.id_for_label }}">Email address</label>
           <div class="newsletter-form__row">

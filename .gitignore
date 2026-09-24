@@ -17,8 +17,9 @@ __pycache__/
 .coverage
 htmlcov/
 
-# Generated static files (python manage.py collectstatic)
+# Generated files: collectstatic output and the online demo build (python manage.py build_demo)
 staticfiles/
+_site/
 
 # Editors and OS files
 .vscode/

@@ -1,0 +1,18 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Orders{% endblock %}
+{% block demo_page %}staff-orders{% endblock %}
+{% block content %}
+<div class="staff-head">
+  <div><h1>Orders</h1><p class="muted">Guest orders for pickup. Open a row to update its status.</p></div>
+</div>
+<nav class="chip-row" aria-label="Filter orders by status">
+  {% for key, label in filters %}<a class="chip" href="?status={{ key }}" data-status="{{ key }}">{{ label }}</a>{% endfor %}
+</nav>
+<form class="filter-bar filter-bar--compact" method="get">
+  <input type="hidden" name="status" value="open" data-status-input>
+  <div class="filter-bar__field"><label for="order-q">Search by number, name or email</label><input id="order-q" type="search" name="q" maxlength="60"></div>
+  <button class="btn btn--secondary" type="submit">Search</button>
+</form>
+<div data-orders-table><p class="muted">Loading…</p></div>
+{% endblock %}

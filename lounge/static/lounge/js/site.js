@@ -6,6 +6,9 @@
   var doc = document.documentElement;
   doc.classList.add("js");
   var FETCH_HEADERS = { "X-Requested-With": "fetch", "Accept": "application/json" };
+  // The online demo (GitHub Pages) has no server: demo.js handles its forms, so the handlers below
+  // that post to the server are skipped there.
+  var DEMO = doc.hasAttribute("data-demo");
 
   /* Toast messages ------------------------------------------------------------------------- */
   var toast = document.querySelector("[data-toast]");
@@ -41,7 +44,7 @@
 
   document.addEventListener("submit", function (event) {
     var form = event.target;
-    if (event.defaultPrevented || !(form instanceof HTMLFormElement)) return;
+    if (DEMO || event.defaultPrevented || !(form instanceof HTMLFormElement)) return;
     if (form.dataset.submitting === "1") { event.preventDefault(); return; }
     if (form.hasAttribute("data-pending-form") || form.querySelector("[data-pending-text]")) {
       form.dataset.submitting = "1";
@@ -102,7 +105,7 @@
   /* Add to cart without leaving the page ----------------------------------------------------------- */
   document.querySelectorAll("[data-cart-form]").forEach(function (form) {
     form.addEventListener("submit", function (event) {
-      if (!window.fetch) return;
+      if (DEMO || !window.fetch) return;
       event.preventDefault();
       if (form.dataset.submitting === "1") return;
       form.dataset.submitting = "1";
@@ -131,7 +134,7 @@
     var status = form.querySelector("[data-newsletter-status]");
     var input = form.querySelector("input[type=email]");
     form.addEventListener("submit", function (event) {
-      if (!window.fetch) return;
+      if (DEMO || !window.fetch) return;
       event.preventDefault();
       if (form.dataset.submitting === "1") return;
       var button = event.submitter || form.querySelector("[type=submit]");
@@ -178,7 +181,7 @@
   /* Staff: switch availability and visibility in place ------------------------------------------------------ */
   document.querySelectorAll("[data-toggle-form]").forEach(function (form) {
     form.addEventListener("submit", function (event) {
-      if (!window.fetch) return;
+      if (DEMO || !window.fetch) return;
       event.preventDefault();
       var button = form.querySelector(".switch");
       if (button.classList.contains("is-loading")) return;
@@ -206,4 +209,7 @@
       preview.hidden = !picker.value;
     });
   }
+
+  // Shared with demo.js, which renders the online demo's pages in the browser.
+  window.ZenLeafUI = { showToast: showToast, setBusy: setBusy, updateCartCount: updateCartCount };
 })();

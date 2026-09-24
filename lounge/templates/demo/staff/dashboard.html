@@ -1,0 +1,28 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Dashboard{% endblock %}
+{% block demo_page %}staff-dashboard{% endblock %}
+{% block content %}
+<div class="staff-head">
+  <h1>Dashboard</h1>
+  <p class="muted">No sign-in in the online demo.</p>
+</div>
+<ul class="stat-grid" data-stats><li class="muted">Loading…</li></ul>
+
+<div class="staff-columns">
+  <section class="panel" aria-labelledby="recent-orders-title">
+    <div class="panel__head"><h2 id="recent-orders-title">Recent orders</h2><a href="{% url 'staff:orders' %}?status=all">All orders</a></div>
+    <div data-recent-orders></div>
+  </section>
+  <section class="panel" aria-labelledby="pending-res-title">
+    <div class="panel__head"><h2 id="pending-res-title">Pending table requests</h2><a href="{% url 'staff:reservations' %}">All requests</a></div>
+    <div data-pending-reservations></div>
+  </section>
+</div>
+
+<section class="panel demo-reset" aria-labelledby="reset-title">
+  <h2 id="reset-title">Start over</h2>
+  <p class="muted">Clear everything this demo saved in your browser and restore the original menu.</p>
+  {% include "demo/partials/reset.html" %}
+</section>
+{% endblock %}

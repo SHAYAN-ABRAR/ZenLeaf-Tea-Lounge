@@ -1,0 +1,27 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}{% if editing %}Edit product{% else %}Add a product{% endif %}{% endblock %}
+{% block demo_page %}{% if editing %}staff-product-edit{% else %}staff-product-new{% endif %}{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol><li><a href="{% url 'staff:products' %}">Products</a></li><li><span aria-current="page" data-product-crumb>{% if editing %}Edit product{% else %}New product{% endif %}</span></li></ol>
+</nav>
+<div class="staff-head">
+  <h1 data-product-heading>{% if editing %}Edit product{% else %}Add a product{% endif %}</h1>
+  <a class="btn btn--quiet btn--small" href="{% url 'lounge:menu' %}" data-view-on-menu hidden>View on the menu {% icon 'arrow-right' %}</a>
+</div>
+<div class="empty-state" data-product-missing hidden>
+  {% icon 'search' 'empty-state__icon' %}
+  <h2>This product isn't in the demo</h2>
+  <p>It may have been deleted, or the demo was reset.</p>
+  <a class="btn btn--secondary" href="{% url 'staff:products' %}">Back to products</a>
+</div>
+<form class="form-card form-card--wide" novalidate data-demo-form="product">
+  {% include "staff/partials/product_fields.html" %}
+  <div class="form-actions">
+    <button class="btn btn--large" type="submit">{% if editing %}Save changes{% else %}Add product{% endif %}</button>
+    <a class="btn btn--secondary btn--large" href="{% url 'staff:products' %}">Cancel</a>
+    {% if editing %}<a class="btn btn--quiet btn--danger-text" href="{% url 'staff:products' %}" data-delete-link>{% icon 'trash' %}Delete product</a>{% endif %}
+  </div>
+</form>
+{% endblock %}

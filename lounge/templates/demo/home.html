@@ -1,0 +1,18 @@
+{% extends "lounge/home.html" %}
+{% block demo_page %}home{% endblock %}
+{% block featured %}
+<div data-featured><p class="muted">Loading the menu…</p></div>
+{% endblock %}
+{% block categories %}
+<section class="section section--tinted" aria-labelledby="categories-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Browse by kind</p>
+        <h2 id="categories-title">Explore the menu</h2>
+      </div>
+    </div>
+    <ul class="category-tiles" data-categories></ul>
+  </div>
+</section>
+{% endblock %}
