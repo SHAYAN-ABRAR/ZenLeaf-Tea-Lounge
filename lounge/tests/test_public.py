@@ -89,6 +89,17 @@ class CartAndCheckoutTests(TestCase):
         self.assertEqual((sold_out.status_code, sold_out.json()["ok"]), (409, False))
         self.assertEqual(self.client.post(reverse("lounge:cart_add"), {"product_id": 99999}, **FETCH).status_code, 404)
 
+    def test_malformed_requests_are_refused_without_errors(self):
+        self.assertEqual(self.client.post(reverse("lounge:cart_add"), {"product_id": "²"}, **FETCH).status_code, 404)
+        self.client.post(reverse("lounge:cart_update"), {"product_id": "²", "action": "set", "quantity": "2"})
+        self.assertEqual(self.cart(), {})
+        self.assertEqual(self.client.get(reverse("lounge:cart")).status_code, 200)
+        self.add("sencha")
+        self.client.session.pop("checkout_nonce", None)
+        forged = self.client.post(reverse("lounge:checkout"), {"customer_name": "A", "email": "a@example.com", "nonce": "-"})
+        self.assertRedirects(forged, reverse("lounge:checkout"))
+        self.assertFalse(Order.objects.exists())
+
     def test_checkout_with_an_empty_cart_goes_back_to_the_cart(self):
         self.assertRedirects(self.client.get(reverse("lounge:checkout")), reverse("lounge:cart"))
 
@@ -179,12 +190,18 @@ class ReservationTests(TestCase):
         self.assertEqual((reservation.reference, reservation.status, reservation.party_size), ("R-00001", "pending", 3))
         self.assertContains(self.client.get(reservation.get_absolute_url()), "Pending")
 
-    def test_guests_can_cancel_their_request(self):
+    def test_guests_can_cancel_their_request_until_it_starts(self):
         self.request_table(timezone.localdate() + timedelta(days=2))
         reservation = Reservation.objects.get()
         self.client.post(reverse("lounge:reservation_cancel", args=[reservation.token]))
         reservation.refresh_from_db()
         self.assertEqual(reservation.status, "cancelled")
+        past = Reservation.objects.create(name="Earlier Guest", email="guest@example.com", party_size=2,
+                                          date=timezone.localdate() - timedelta(days=3), time=time(18, 0),
+                                          status="confirmed")
+        self.client.post(reverse("lounge:reservation_cancel", args=[past.token]))
+        past.refresh_from_db()
+        self.assertEqual(past.status, "confirmed")
 
 
 class ContactAndNewsletterTests(TestCase):
@@ -215,6 +232,8 @@ class ContactAndNewsletterTests(TestCase):
         self.assertEqual((again["ok"], again["duplicate"]), (True, True))
         self.assertEqual(bad.status_code, 400)
         self.assertEqual(list(NewsletterSubscriber.objects.values_list("email", flat=True)), ["reader@example.com"])
+        self.client.post(url, {"email": "other@example.com", "source": '=HYPERLINK("http://x.example")'}, **FETCH)
+        self.assertEqual(NewsletterSubscriber.objects.get(email="other@example.com").source, "")
 
 
 class ErrorPageTests(TestCase):

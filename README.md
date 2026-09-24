@@ -66,7 +66,7 @@ Then open <http://127.0.0.1:8000/>. The staff area is at <http://127.0.0.1:8000/
 2. installs Django and WhiteNoise from `requirements.txt`,
 3. creates `.env` from `.env.example` with a new random secret key (an existing `.env` is never overwritten),
 4. applies the database migrations,
-5. loads the demo menu, adding only items that are missing,
+5. loads the demo menu if the database has no products yet,
 6. offers to create a staff account if none exists.
 
 On Debian or Ubuntu, if step 1 fails, install the venv module with `sudo apt install python3-venv` and run it again.
@@ -116,10 +116,10 @@ The database runs in SQLite's WAL mode, so while the site is running you'll also
 
 ## The demo menu
 
-`python bootstrap.py` runs `manage.py seed_demo`, which loads six categories and 21 products from `lounge/seed_data.py`. Two of them start as sold out and four are featured on the home page.
+The first time `python bootstrap.py` runs, it loads six categories and 21 products from `lounge/seed_data.py` with `manage.py seed_demo`. Two of them start as sold out and four are featured on the home page. Later runs of `bootstrap.py` leave the menu alone, so products you delete in the staff area stay deleted.
 
-- Running `seed_demo` again only adds items that are missing. It doesn't undo changes made in the staff area.
-- `manage.py seed_demo --reset` (or `bootstrap.py --reset-menu`) puts the demo items' prices, text and availability back to their original values. Orders, requests and messages aren't touched.
+- `manage.py seed_demo` adds any demo items that are missing, including ones deleted in the staff area. It keeps your edits to the others.
+- `manage.py seed_demo --reset` (or `bootstrap.py --reset-menu`) also puts the demo items' prices, text and availability back to their original values. Orders, requests and messages aren't touched.
 
 Every seeded item is illustrative. The names describe common styles of tea, not teas from a particular place, and the site says on every page that the menu and prices are examples. The site has no reviews, ratings, testimonials, street address or opening-hours promise, because there's no real lounge behind it.
 
@@ -159,18 +159,18 @@ All settings are read from `.env` (real environment variables take priority). `.
 .venv/bin/python manage.py test
 ```
 
-The 40 tests run against a temporary in-memory database and cover:
+The 43 tests run against a temporary in-memory database and cover:
 
 - the migrations, the demo seed, order numbering and pricing, and backup and restore;
-- menu filters, the cart, checkout, and the check that one checkout page can't create two orders;
+- menu filters, the cart, checkout, the check that one checkout page can't create two orders, and malformed requests;
 - table request rules, contact and newsletter duplicates, and the error pages;
-- staff sign-in, lockout, permissions and CSRF protection, and staff updates showing up on guest pages.
+- staff sign-in, lockout, permissions and CSRF protection, the CSV export, and staff updates showing up on guest pages.
 
 ## How it's built
 
 - **Django 5.2** renders every page on the server and talks to SQLite through migrations. The site works without JavaScript; with JavaScript, adding to the cart, newsletter sign-up and the staff switches update in place without reloading.
 - **WhiteNoise** serves the CSS, JavaScript, fonts and images, even with debug mode off.
-- **No front-end build step.** It's plain CSS and one small script, and the fonts are included in the repository.
+- **No front-end build step.** It's plain CSS and two small scripts, and the fonts are included in the repository.
 - **Accessibility:** labelled form fields with linked error messages, an error summary that receives focus, a skip link, visible focus outlines, keyboard-operable menus and switches, reduced-motion support, and layouts checked from 320 px to 1440 px wide.
 
 ```

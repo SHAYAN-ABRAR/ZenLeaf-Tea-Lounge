@@ -161,7 +161,6 @@ LOGGING = {
 # --- ZenLeaf demo settings ----------------------------------------------------------------------
 ZENLEAF = {
     "CURRENCY_SYMBOL": env_str("ZENLEAF_CURRENCY_SYMBOL", "৳"),
-    "CURRENCY_CODE": env_str("ZENLEAF_CURRENCY_CODE", "BDT"),
     # Reservation requests: the hours and limits the demo accepts. They are settings, not promises.
     "OPENING_TIME": env_str("ZENLEAF_OPENING_TIME", "10:00"),
     "LAST_SEATING": env_str("ZENLEAF_LAST_SEATING", "20:00"),

@@ -193,7 +193,10 @@ class StaffLoginForm(AuthenticationForm):
         except forms.ValidationError:
             throttle.record_failure(key)
             raise
-        throttle.reset(key)
+        if self.get_user() is not None:
+            # Only a successful sign-in clears the count. (A post with an empty password reaches this
+            # point without authenticating, and must not reset it.)
+            throttle.reset(key)
         return cleaned
 
     def confirm_login_allowed(self, user):

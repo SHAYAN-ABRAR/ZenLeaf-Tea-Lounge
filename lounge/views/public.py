@@ -21,8 +21,17 @@ CHECKOUT_NONCE = "checkout_nonce"
 LAST_ORDER = "last_order_token"
 
 
+NEWSLETTER_SOURCES = {"footer"}
+
+
 def wants_json(request):
     return request.headers.get("X-Requested-With") == "fetch"
+
+
+def parse_id(value):
+    """A database id from form data: plain ASCII digits only ("²".isdigit() is True, for example)."""
+    value = str(value or "")
+    return int(value) if value.isascii() and value.isdigit() else None
 
 
 def safe_next(request, fallback):
@@ -103,8 +112,8 @@ def cart_view(request):
 @require_POST
 def cart_add(request):
     cart = Cart(request)
-    raw_id = str(request.POST.get("product_id", ""))
-    product = Product.objects.filter(pk=int(raw_id)).first() if raw_id.isdigit() else None
+    product_id = parse_id(request.POST.get("product_id"))
+    product = Product.objects.filter(pk=product_id).first() if product_id is not None else None
     try:
         quantity = max(1, min(int(request.POST.get("quantity", 1)), cart.max_quantity))
     except (TypeError, ValueError):
@@ -134,9 +143,10 @@ def _cart_reply(request, cart, ok, text, status=200):
 @require_POST
 def cart_update(request):
     cart = Cart(request)
-    raw_id = str(request.POST.get("product_id", ""))
+    product_id = parse_id(request.POST.get("product_id"))
+    raw_id = str(product_id)
     action = request.POST.get("action", "")
-    if raw_id.isdigit() and action in {"increase", "decrease", "remove", "set"}:
+    if product_id is not None and action in {"increase", "decrease", "remove", "set"}:
         current = cart.quantity_of(raw_id)
         if action == "increase":
             cart.set(raw_id, current + 1)
@@ -172,7 +182,9 @@ def checkout(request):
 
     if request.method == "POST":
         form = CheckoutForm(request.POST)
-        nonce_ok = secrets.compare_digest(request.POST.get("nonce", ""), request.session.get(CHECKOUT_NONCE, "") or "-")
+        expected = request.session.get(CHECKOUT_NONCE) or ""
+        sent = request.POST.get("nonce", "")
+        nonce_ok = bool(expected) and secrets.compare_digest(sent.encode(), expected.encode())
         if not nonce_ok:
             messages.error(request, "This checkout page expired. Please review your order and submit it again.")
             return redirect("lounge:checkout")
@@ -247,22 +259,27 @@ def reserve(request):
 
 def reservation_status(request, token):
     reservation = get_object_or_404(Reservation, token=token)
-    upcoming = timezone.make_aware(datetime.combine(reservation.date, reservation.time)) > timezone.now()
     return render(request, "lounge/reservation_status.html", {
-        "reservation": reservation, "can_cancel": reservation.is_active and upcoming,
+        "reservation": reservation, "can_cancel": can_cancel(reservation),
         "time_label": format_time(reservation.time),
     })
+
+
+def can_cancel(reservation):
+    """Pending or confirmed requests can be cancelled until their start time."""
+    starts = timezone.make_aware(datetime.combine(reservation.date, reservation.time))
+    return reservation.is_active and starts > timezone.now()
 
 
 @require_POST
 def reservation_cancel(request, token):
     reservation = get_object_or_404(Reservation, token=token)
-    if reservation.is_active:
+    if can_cancel(reservation):
         reservation.status = Reservation.Status.CANCELLED
         reservation.save(update_fields=["status", "updated_at"])
         messages.success(request, f"Request {reservation.reference} is cancelled.")
     else:
-        messages.info(request, "This request is no longer active, so there was nothing to cancel.")
+        messages.info(request, "This request can't be cancelled any more, so nothing changed.")
     return redirect(reservation)
 
 
@@ -302,10 +319,11 @@ def newsletter_signup(request):
     if form.is_spam():
         return _newsletter_reply(request, True, "You're subscribed.", fallback)
     email = form.cleaned_data["email"]
+    source = request.POST.get("source", "")
+    if source not in NEWSLETTER_SOURCES:      # only known values; it ends up in the CSV export
+        source = ""
     try:
-        _obj, created = NewsletterSubscriber.objects.get_or_create(
-            email=email, defaults={"source": request.POST.get("source", "")[:30]},
-        )
+        _obj, created = NewsletterSubscriber.objects.get_or_create(email=email, defaults={"source": source})
     except IntegrityError:
         created = False
     if created:

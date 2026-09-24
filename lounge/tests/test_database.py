@@ -43,6 +43,14 @@ class SeedTests(TestCase):
         sencha = product("sencha")
         self.assertEqual((sencha.price, sencha.is_available), (Decimal("220"), True))
 
+    def test_bootstrap_seed_leaves_an_existing_menu_alone(self):
+        seed()
+        product("matcha").delete()
+        call_command("seed_demo", "--if-empty", stdout=StringIO())     # what bootstrap.py runs
+        self.assertFalse(Product.objects.filter(slug="matcha").exists())
+        seed()                                                          # an explicit seed_demo adds it back
+        self.assertTrue(Product.objects.filter(slug="matcha").exists())
+
 
 class OrderModelTests(TestCase):
     @classmethod

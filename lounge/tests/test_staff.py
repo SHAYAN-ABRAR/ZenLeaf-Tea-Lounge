@@ -73,6 +73,15 @@ class AccessTests(StaffTestCase):
         self.assertContains(locked, "Too many failed attempts")
         self.assertNotIn("_auth_user_id", self.client.session)
 
+    def test_empty_password_posts_do_not_reset_the_count(self):
+        url = reverse("staff:login")
+        for attempt in range(8):
+            password = "" if attempt % 2 else "wrong"                 # 4 wrong guesses, 4 empty posts
+            self.client.post(url, {"username": "counter", "password": password})
+        self.client.post(url, {"username": "counter", "password": "wrong"})   # 5th wrong guess
+        locked = self.client.post(url, {"username": "counter", "password": self.password})
+        self.assertContains(locked, "Too many failed attempts")
+
     def test_correct_password_signs_in_and_sign_out_needs_post(self):
         response = self.client.post(reverse("staff:login"), {"username": "counter", "password": self.password})
         self.assertRedirects(response, reverse("staff:dashboard"))
@@ -143,8 +152,11 @@ class StaffUpdateTests(StaffTestCase):
         self.assertTrue(self.message.is_handled)
 
     def test_subscriber_export_and_removal(self):
+        NewsletterSubscriber.objects.create(email="=1+2@example.com")
         export = self.client.get(reverse("staff:subscriber_export"))
         self.assertEqual(export["Content-Type"], "text/csv; charset=utf-8")
         self.assertIn("reader@example.com,footer", export.content.decode())
+        self.assertIn("'=1+2@example.com", export.content.decode())       # not run as a formula
+        NewsletterSubscriber.objects.filter(email="=1+2@example.com").delete()
         self.client.post(reverse("staff:subscriber_delete", args=[self.subscriber.pk]))
         self.assertFalse(NewsletterSubscriber.objects.exists())

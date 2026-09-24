@@ -7,8 +7,9 @@ from lounge.seed_data import CATEGORIES, PRODUCTS
 
 class Command(BaseCommand):
     help = (
-        "Load the illustrative demo menu. Only missing categories and products are added, so running it "
-        "again never overwrites changes made in the staff area. Use --reset to restore the demo values."
+        "Load the illustrative demo menu. Only missing categories and products are added (including demo "
+        "items deleted in the staff area); edits to existing items are kept. Use --reset to restore the "
+        "demo values."
     )
 
     def add_arguments(self, parser):
@@ -16,9 +17,19 @@ class Command(BaseCommand):
             "--reset", action="store_true",
             help="Also reset existing demo products (price, availability, text) to their seed values.",
         )
+        parser.add_argument(
+            "--if-empty", action="store_true",
+            help="Do nothing if the database already has products (used by bootstrap.py).",
+        )
 
     @transaction.atomic
-    def handle(self, *args, reset=False, **options):
+    def handle(self, *args, reset=False, if_empty=False, **options):
+        if if_empty and not reset and Product.objects.exists():
+            self.stdout.write(
+                f"The menu already has {Product.objects.count()} products, so the demo menu wasn't loaded again. "
+                "Run `manage.py seed_demo` to add any missing demo items."
+            )
+            return
         categories = {}
         for slug, name, description, order in CATEGORIES:
             category, _ = Category.objects.get_or_create(

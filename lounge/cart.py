@@ -32,7 +32,11 @@ class Cart:
     def __init__(self, request):
         self.session = request.session
         raw = self.session.get(SESSION_KEY, {})
-        self.items = {str(k): int(v) for k, v in raw.items() if str(k).isdigit() and int(v) > 0}
+        self.items = {}
+        for key, quantity in raw.items():
+            key = str(key)
+            if key.isascii() and key.isdigit() and isinstance(quantity, int) and quantity > 0:
+                self.items[key] = quantity
 
     @property
     def max_quantity(self):

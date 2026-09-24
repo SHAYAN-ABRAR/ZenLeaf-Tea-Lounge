@@ -4,6 +4,9 @@
     python bootstrap.py               # virtual environment, packages, .env, database, demo menu
     python bootstrap.py --reset-menu  # the same, and restore the demo menu to its original values
 
+The demo menu is only loaded into a database that has no products yet, so items deleted in the staff
+area don't come back when this runs again.
+
 It never deletes the database and never overwrites an existing .env file.
 """
 import argparse
@@ -23,6 +26,10 @@ def venv_python():
     return VENV / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
 
 
+def has_pip(python):
+    return subprocess.run([str(python), "-m", "pip", "--version"], capture_output=True).returncode == 0
+
+
 def run(args, **kwargs):
     root = str(ROOT) + os.sep
     shown = [str(a)[len(root):] if str(a).startswith(root) else str(a) for a in args]
@@ -39,14 +46,16 @@ def main():
         sys.exit(f"Python 3.10 or newer is needed (this is {sys.version.split()[0]}). Install a newer Python and run this again.")
 
     print("1/5  Virtual environment (.venv)")
-    if venv_python().exists():
+    if venv_python().exists() and has_pip(venv_python()):
         print("  already there")
     else:
         try:
-            venv.create(VENV, with_pip=True)
+            # clear=True replaces a half-made .venv, for example one left behind without pip.
+            venv.create(VENV, with_pip=True, clear=VENV.exists())
         except (OSError, subprocess.CalledProcessError) as exc:
             sys.exit(f"Couldn't create the virtual environment ({exc}).\n"
-                     "On Debian or Ubuntu, install it with `sudo apt install python3-venv`, then run this again.")
+                     "If a server is running from .venv, stop it first. On Debian or Ubuntu, install venv "
+                     "support with `sudo apt install python3-venv`. Then run this again.")
         print("  created")
     py = venv_python()
 
@@ -66,7 +75,7 @@ def main():
     run([py, "manage.py", "migrate", "--noinput"])
 
     print("5/5  Demo menu")
-    run([py, "manage.py", "seed_demo"] + (["--reset"] if args.reset_menu else []))
+    run([py, "manage.py", "seed_demo"] + (["--reset"] if args.reset_menu else ["--if-empty"]))
 
     count_staff = ("import django, os; os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zenleaf.settings'); django.setup(); "
                    "from django.contrib.auth import get_user_model; print(get_user_model().objects.filter(is_staff=True).count())")

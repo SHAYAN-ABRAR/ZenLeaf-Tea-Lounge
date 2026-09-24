@@ -17,7 +17,7 @@
         <li class="cart-line{% if line.problem %} cart-line--problem{% endif %}">
           <img class="cart-line__art" src="{% static line.product.illustration_path %}" alt="" width="96" height="72">
           <div class="cart-line__info">
-            <h3 class="cart-line__name"><a href="{{ line.product.get_absolute_url }}">{{ line.product.name }}</a></h3>
+            <h3 class="cart-line__name">{% if line.product.is_listed %}<a href="{{ line.product.get_absolute_url }}">{{ line.product.name }}</a>{% else %}{{ line.product.name }}{% endif %}</h3>
             <p class="muted">{{ line.product.price|money }} each</p>
             {% if line.problem %}<p class="field__error">{% icon 'alert' %}<span>{{ line.problem }}</span></p>{% endif %}
           </div>

@@ -287,6 +287,12 @@ def subscriber_list(request):
     })
 
 
+def csv_cell(value):
+    """Spreadsheet apps run cells starting with = + - @ (or a tab/CR) as formulas; a leading ' stops that."""
+    value = str(value)
+    return "'" + value if value[:1] in ("=", "+", "-", "@", "\t", "\r") else value
+
+
 @staff_required
 def subscriber_export(request):
     response = HttpResponse(content_type="text/csv; charset=utf-8")
@@ -294,7 +300,8 @@ def subscriber_export(request):
     writer = csv.writer(response)
     writer.writerow(["email", "source", "subscribed_at"])
     for sub in NewsletterSubscriber.objects.order_by("created_at"):
-        writer.writerow([sub.email, sub.source, timezone.localtime(sub.created_at).isoformat(timespec="minutes")])
+        writer.writerow([csv_cell(sub.email), csv_cell(sub.source),
+                         timezone.localtime(sub.created_at).isoformat(timespec="minutes")])
     return response
 
 

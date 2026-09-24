@@ -19,14 +19,18 @@ def is_locked(key):
 
 
 def record_failure(key):
+    """Count one failed attempt. Each failure restarts the lockout period, so a lockout lasts the full
+    LOGIN_LOCKOUT_MINUTES after the last failed attempt."""
     timeout = settings.LOGIN_LOCKOUT_MINUTES * 60
     if cache.add(key, 1, timeout):
         return 1
     try:
-        return cache.incr(key)
+        count = cache.incr(key)
     except ValueError:  # expired between add() and incr()
         cache.set(key, 1, timeout)
         return 1
+    cache.touch(key, timeout)
+    return count
 
 
 def reset(key):
