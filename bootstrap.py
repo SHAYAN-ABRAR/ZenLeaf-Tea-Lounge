@@ -24,7 +24,9 @@ def venv_python():
 
 
 def run(args, **kwargs):
-    print("  $", " ".join(str(a) for a in args))
+    root = str(ROOT) + os.sep
+    shown = [str(a)[len(root):] if str(a).startswith(root) else str(a) for a in args]
+    print("  $", " ".join(shown))
     return subprocess.run([str(a) for a in args], cwd=ROOT, check=True, **kwargs)
 
 
