@@ -1,0 +1,62 @@
+{% extends "staff/base.html" %}
+{% load static lounge_tags %}
+{% block title %}{% if product %}Edit {{ product.name }}{% else %}Add a product{% endif %}{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <ol><li><a href="{% url 'staff:products' %}">Products</a></li><li><span aria-current="page">{% if product %}{{ product.name }}{% else %}New product{% endif %}</span></li></ol>
+</nav>
+<div class="staff-head">
+  <h1>{% if product %}Edit {{ product.name }}{% else %}Add a product{% endif %}</h1>
+  {% if product and product.is_listed %}<a class="btn btn--quiet btn--small" href="{{ product.get_absolute_url }}">View on the menu {% icon 'arrow-right' %}</a>{% endif %}
+</div>
+<form class="form-card form-card--wide" method="post" novalidate data-pending-form>
+  {% csrf_token %}
+  {% include "lounge/partials/error_summary.html" %}
+  <fieldset class="fieldset">
+    <legend>Basics</legend>
+    <div class="field-row">
+      {% include "lounge/partials/field.html" with field=form.name %}
+      {% include "lounge/partials/field.html" with field=form.category %}
+    </div>
+    <div class="field-row">
+      {% include "lounge/partials/field.html" with field=form.price %}
+      {% include "lounge/partials/field.html" with field=form.sort_order %}
+    </div>
+    {% include "lounge/partials/field.html" with field=form.slug %}
+    {% include "lounge/partials/field.html" with field=form.short_description %}
+    {% include "lounge/partials/field.html" with field=form.description %}
+  </fieldset>
+  <fieldset class="fieldset">
+    <legend>Picture</legend>
+    <div class="illustration-picker">
+      {% include "lounge/partials/field.html" with field=form.illustration %}
+      <img class="illustration-picker__preview" src="{% if form.illustration.value %}{% static 'lounge/img/menu/' %}{{ form.illustration.value }}.svg{% endif %}" alt="Preview of the selected illustration" width="240" height="180" data-illustration-preview data-base="{% static 'lounge/img/menu/' %}"{% if not form.illustration.value %} hidden{% endif %}>
+    </div>
+  </fieldset>
+  <fieldset class="fieldset">
+    <legend>Brewing and dietary notes</legend>
+    <div class="field-row field-row--3">
+      {% include "lounge/partials/field.html" with field=form.caffeine %}
+      {% include "lounge/partials/field.html" with field=form.brew_temperature_c %}
+      {% include "lounge/partials/field.html" with field=form.brew_time %}
+    </div>
+    <div class="field-row">
+      {% include "lounge/partials/field.html" with field=form.tasting_notes %}
+      {% include "lounge/partials/field.html" with field=form.allergens %}
+    </div>
+  </fieldset>
+  <fieldset class="fieldset">
+    <legend>Visibility</legend>
+    <div class="check-grid">
+      {% include "lounge/partials/checkbox.html" with field=form.is_listed %}
+      {% include "lounge/partials/checkbox.html" with field=form.is_available %}
+      {% include "lounge/partials/checkbox.html" with field=form.is_featured %}
+    </div>
+  </fieldset>
+  <div class="form-actions">
+    <button class="btn btn--large" type="submit" data-pending-text="Saving…">{% if product %}Save changes{% else %}Add product{% endif %}</button>
+    <a class="btn btn--secondary btn--large" href="{% url 'staff:products' %}">Cancel</a>
+    {% if product %}<a class="btn btn--quiet btn--danger-text" href="{% url 'staff:product_delete' product.pk %}">{% icon 'trash' %}Delete product</a>{% endif %}
+  </div>
+</form>
+{% endblock %}

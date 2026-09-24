@@ -1,0 +1,42 @@
+{% extends "lounge/base.html" %}
+{% load static lounge_tags %}
+{% block title %}Checkout · ZenLeaf Tea Lounge{% endblock %}
+{% block content %}
+<div class="page-head page-head--compact">
+  <div class="container">
+    <p class="eyebrow">Guest checkout</p>
+    <h1>Your details</h1>
+    <p class="lede">No account and no card details. Staff use your name to hand over the order.</p>
+  </div>
+</div>
+<div class="container checkout-layout">
+  <form class="form-card" method="post" action="{% url 'lounge:checkout' %}" novalidate data-pending-form>
+    {% csrf_token %}
+    <input type="hidden" name="nonce" value="{{ nonce }}">
+    {% include "lounge/partials/error_summary.html" %}
+    {% include "lounge/partials/field.html" with field=form.customer_name %}
+    {% include "lounge/partials/field.html" with field=form.email %}
+    {% include "lounge/partials/field.html" with field=form.phone %}
+    {% include "lounge/partials/field.html" with field=form.notes %}
+    {% include "lounge/partials/honeypot.html" %}
+    <div class="notice">
+      {% icon 'info' %}
+      <p>This is a demo: placing an order saves it to the lounge's local database. No payment is taken and no email is sent.</p>
+    </div>
+    <button class="btn btn--large btn--block" type="submit" data-pending-text="Placing your order…">Place order · {{ subtotal|money }}</button>
+  </form>
+
+  <aside class="summary-card" aria-labelledby="order-summary-title">
+    <h2 id="order-summary-title">Your order</h2>
+    <ul class="summary-lines">
+      {% for line in lines %}
+      <li><span>{{ line.quantity }} × {{ line.product.name }}</span><span>{{ line.line_total|money }}</span></li>
+      {% endfor %}
+    </ul>
+    <dl class="summary-card__rows">
+      <div class="summary-card__total"><dt>Total</dt><dd>{{ subtotal|money }}</dd></div>
+    </dl>
+    <a class="link-arrow link-arrow--back" href="{% url 'lounge:cart' %}">{% icon 'arrow-left' %} Change your cart</a>
+  </aside>
+</div>
+{% endblock %}

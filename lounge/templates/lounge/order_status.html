@@ -1,0 +1,48 @@
+{% extends "lounge/base.html" %}
+{% load lounge_tags %}
+{% block title %}Order {{ order.number }} · ZenLeaf Tea Lounge{% endblock %}
+{% block content %}
+<div class="page-head page-head--compact">
+  <div class="container">
+    <p class="eyebrow">Order confirmation</p>
+    <h1>Order {{ order.number }}</h1>
+    <p class="lede">Placed by {{ order.customer_name }} on {{ order.created_at|date:"j F Y" }} at {{ order.created_at|clock }}.</p>
+  </div>
+</div>
+<div class="container status-layout">
+  <section class="status-card" aria-labelledby="status-title">
+    <h2 id="status-title">Status: <span class="badge badge--{{ order.status|status_tone }}">{{ order.get_status_display }}</span></h2>
+    {% if order.status == "cancelled" %}
+    <p>This order was cancelled. If that's unexpected, <a href="{% url 'lounge:contact' %}">send a message</a> and mention {{ order.number }}.</p>
+    {% else %}
+    <ol class="progress" aria-label="Order progress">
+      {% for value, label in steps %}
+      <li class="progress__step{% if forloop.counter0 < order.progress_index %} is-done{% elif forloop.counter0 == order.progress_index %} is-current{% endif %}"{% if forloop.counter0 == order.progress_index %} aria-current="step"{% endif %}>
+        <span class="progress__dot">{% if forloop.counter0 < order.progress_index %}{% icon 'check' %}{% endif %}</span>
+        <span class="progress__label">{{ label }}{% if forloop.counter0 < order.progress_index %}<span class="visually-hidden"> (done)</span>{% endif %}</span>
+      </li>
+      {% endfor %}
+    </ol>
+    {% endif %}
+    <div class="notice">
+      {% icon 'info' %}
+      <p>Keep this page's address to check the status later; it updates when staff change it. Payment isn't taken online, and this demo doesn't send emails or texts.</p>
+    </div>
+    <a class="btn btn--secondary" href="{{ request.path }}">Refresh status</a>
+  </section>
+
+  <aside class="summary-card" aria-labelledby="items-title">
+    <h2 id="items-title">Items</h2>
+    <ul class="summary-lines">
+      {% for item in order.items.all %}
+      <li><span>{{ item.quantity }} × {{ item.product_name }}</span><span>{{ item.line_total|money }}</span></li>
+      {% endfor %}
+    </ul>
+    <dl class="summary-card__rows">
+      <div class="summary-card__total"><dt>Total</dt><dd>{{ order.subtotal|money }}</dd></div>
+    </dl>
+    {% if order.notes %}<p><strong>Your notes:</strong> {{ order.notes }}</p>{% endif %}
+    <a class="link-arrow" href="{% url 'lounge:menu' %}">Back to the menu {% icon 'arrow-right' %}</a>
+  </aside>
+</div>
+{% endblock %}

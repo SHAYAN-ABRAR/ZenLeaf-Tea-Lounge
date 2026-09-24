@@ -1,0 +1,123 @@
+{% load static lounge_tags %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ZenLeaf Tea Lounge{% endblock %}</title>
+  <meta name="description" content="{% block description %}ZenLeaf Tea Lounge is a demo tea lounge: browse the menu, order ahead for pickup and request a table.{% endblock %}">
+  <meta name="theme-color" content="#234b37">
+  <link rel="icon" href="{% static 'lounge/img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="preload" href="{% static 'lounge/fonts/fraunces-latin-opsz-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="{% static 'lounge/fonts/manrope-latin-wght-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'lounge/css/site.css' %}">
+  <script src="{% static 'lounge/js/early.js' %}"></script>
+  <script src="{% static 'lounge/js/site.js' %}" defer></script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  {% block site_header %}
+  <section class="demo-bar" aria-label="Demo notice">
+    <div class="container demo-bar__inner">
+      {% icon 'info' %}
+      <p><strong>Demo project.</strong> <span class="demo-bar__long">The menu, prices and availability are illustrative. Orders and table requests are saved in a local database, and no payments are taken.</span><span class="demo-bar__short">Illustrative menu; no payments are taken.</span> <a href="{% url 'lounge:about' %}">About this demo</a></p>
+    </div>
+  </section>
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="{% url 'lounge:home' %}">
+        <img class="brand__mark" src="{% static 'lounge/img/logo.svg' %}" alt="" width="40" height="40">
+        <span class="brand__text"><span class="brand__name">ZenLeaf</span> <span class="brand__sub">Tea Lounge</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav-list" data-nav-toggle hidden>
+          <span class="nav-toggle__icon nav-toggle__icon--open">{% icon 'menu' %}</span>
+          <span class="nav-toggle__icon nav-toggle__icon--close">{% icon 'close' %}</span>
+          <span class="visually-hidden">Navigation</span>
+        </button>
+        <ul class="site-nav__list" id="site-nav-list">
+          <li><a href="{% url 'lounge:menu' %}"{% if nav == 'menu' %} aria-current="page"{% endif %}>Menu</a></li>
+          <li><a href="{% url 'lounge:reserve' %}"{% if nav == 'reserve' %} aria-current="page"{% endif %}>Reserve</a></li>
+          <li><a href="{% url 'lounge:contact' %}"{% if nav == 'contact' %} aria-current="page"{% endif %}>Contact</a></li>
+          <li><a href="{% url 'lounge:about' %}"{% if nav == 'about' %} aria-current="page"{% endif %}>About</a></li>
+        </ul>
+      </nav>
+      <a class="cart-link" href="{% url 'lounge:cart' %}"{% if nav == 'cart' %} aria-current="page"{% endif %}>
+        {% icon 'bag' %}<span class="cart-link__label">Cart</span>
+        <span class="cart-link__count" data-cart-count{% if not cart_count %} data-empty{% endif %}>{{ cart_count }}</span>
+        <span class="visually-hidden" data-cart-label>{{ cart_count }} item{{ cart_count|pluralize }}</span>
+      </a>
+    </div>
+  </header>
+  {% endblock %}
+
+  <main id="main" tabindex="-1">
+    {% if messages %}
+    <div class="container flash-stack">
+      {% for message in messages %}
+      <div class="alert alert--{{ message.level_tag }}" role="{% if message.level_tag == 'error' %}alert{% else %}status{% endif %}">
+        {% if message.level_tag == 'success' %}{% icon 'check' %}{% elif message.level_tag == 'error' or message.level_tag == 'warning' %}{% icon 'alert' %}{% else %}{% icon 'info' %}{% endif %}
+        <p>{{ message }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block site_footer %}
+  <footer class="site-footer">
+    <div class="container site-footer__grid">
+      <section class="site-footer__about" aria-labelledby="footer-title">
+        <h2 class="site-footer__title" id="footer-title">
+          <img src="{% static 'lounge/img/logo.svg' %}" alt="" width="32" height="32"> ZenLeaf Tea Lounge
+        </h2>
+        <p>A demonstration tea lounge built with Django and SQLite. There's no physical location; the menu and prices are examples.</p>
+      </section>
+      <nav class="site-footer__nav" aria-label="Footer">
+        <h2 class="site-footer__heading">Visit</h2>
+        <ul>
+          <li><a href="{% url 'lounge:menu' %}">Menu</a></li>
+          <li><a href="{% url 'lounge:reserve' %}">Request a table</a></li>
+          <li><a href="{% url 'lounge:cart' %}">Cart</a></li>
+          <li><a href="{% url 'lounge:contact' %}">Contact</a></li>
+        </ul>
+      </nav>
+      <nav class="site-footer__nav" aria-label="Project">
+        <h2 class="site-footer__heading">Project</h2>
+        <ul>
+          <li><a href="{% url 'lounge:about' %}">About this demo</a></li>
+          <li><a href="{% url 'staff:dashboard' %}">Staff sign-in</a></li>
+        </ul>
+      </nav>
+      <section class="site-footer__newsletter" aria-labelledby="newsletter-title">
+        <h2 class="site-footer__heading" id="newsletter-title">Newsletter</h2>
+        <p>Sign up for occasional news. This demo stores your address but never sends email.</p>
+        {% with form=footer_newsletter_form %}
+        <form class="newsletter-form" method="post" action="{% url 'lounge:newsletter' %}" novalidate data-newsletter-form>
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <input type="hidden" name="source" value="footer">
+          <label class="newsletter-form__label" for="{{ form.email.id_for_label }}">Email address</label>
+          <div class="newsletter-form__row">
+            {% render_field form.email %}
+            <button class="btn btn--on-dark" type="submit" data-pending-text="Saving…">Subscribe</button>
+          </div>
+          <div class="hp" aria-hidden="true">{{ form.website.label_tag }}{{ form.website }}</div>
+          <p class="newsletter-form__status" data-newsletter-status role="status" aria-live="polite"></p>
+        </form>
+        {% endwith %}
+      </section>
+    </div>
+    <div class="container site-footer__base">
+      <p>Illustrations, icons and copy were made for this project. Fonts: Fraunces and Manrope, under the SIL Open Font License.</p>
+      <p>A demo by <a href="https://github.com/SHAYAN-ABRAR">Shayan Abrar</a>.</p>
+    </div>
+  </footer>
+  {% endblock %}
+
+  <div class="toast" data-toast role="status" aria-live="polite" hidden>
+    <p class="toast__text" data-toast-text></p>
+    <a class="toast__action" href="{% url 'lounge:cart' %}" data-toast-action>View cart</a>
+  </div>
+</body>
+</html>

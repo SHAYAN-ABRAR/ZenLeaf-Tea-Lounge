@@ -1,0 +1,142 @@
+{% extends "lounge/base.html" %}
+{% load static lounge_tags %}
+{% block content %}
+<section class="hero">
+  <div class="container hero__inner">
+    <div class="hero__copy">
+      <p class="eyebrow">ZenLeaf Tea Lounge</p>
+      <h1 class="display">Tea worth slowing down for.</h1>
+      <p class="lede">Browse a short menu of loose-leaf teas, lattes and small bites. Order ahead as a guest and collect at the counter, or request a table for a quiet hour.</p>
+      <div class="button-row">
+        <a class="btn btn--large" href="{% url 'lounge:menu' %}">Browse the menu {% icon 'arrow-right' %}</a>
+        <a class="btn btn--secondary btn--large" href="{% url 'lounge:reserve' %}">Request a table</a>
+      </div>
+      <ul class="hero__facts">
+        <li>{% icon 'check' %}Guest checkout</li>
+        <li>{% icon 'check' %}No card details</li>
+        <li>{% icon 'check' %}Brewing notes for every tea</li>
+      </ul>
+    </div>
+    <div class="hero__art">
+      <img src="{% static 'lounge/img/hero.svg' %}" alt="Illustration of a teapot pouring tea into a cup" width="640" height="520">
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="featured-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">From the menu</p>
+        <h2 id="featured-title">A few to start with</h2>
+      </div>
+      <a class="link-arrow" href="{% url 'lounge:menu' %}">See the full menu {% icon 'arrow-right' %}</a>
+    </div>
+    {% if featured %}
+    <div class="product-grid">
+      {% for product in featured %}{% include "lounge/partials/product_card.html" %}{% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      {% icon 'leaf' 'empty-state__icon' %}
+      <h3>Nothing featured right now</h3>
+      <p>The full menu is still open.</p>
+      <a class="btn btn--secondary" href="{% url 'lounge:menu' %}">Browse the menu</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% if categories %}
+<section class="section section--tinted" aria-labelledby="categories-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Browse by kind</p>
+        <h2 id="categories-title">Explore the menu</h2>
+      </div>
+    </div>
+    <ul class="category-tiles">
+      {% for category in categories %}
+      <li>
+        <a class="category-tile" href="{% url 'lounge:menu' %}?category={{ category.slug }}">
+          <span class="category-tile__name">{{ category.name }}</span>
+          <span class="category-tile__desc">{{ category.description }}</span>
+          <span class="category-tile__count">{{ category.listed }} item{{ category.listed|pluralize }} {% icon 'arrow-right' %}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endif %}
+
+<section class="section" aria-labelledby="how-title">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">How it works</p>
+        <h2 id="how-title">Order ahead, or save a table</h2>
+      </div>
+    </div>
+    <div class="how-grid">
+      <article class="how-card">
+        <h3>{% icon 'bag' %} Order for pickup</h3>
+        <ol class="steps">
+          <li><strong>Pick your teas.</strong> Add drinks and small bites to your cart. Sold-out items are marked.</li>
+          <li><strong>Check out as a guest.</strong> Leave a name and an email address. No account or card details; payment isn't taken online.</li>
+          <li><strong>Follow your order.</strong> The confirmation page shows your order number and its status as staff update it.</li>
+        </ol>
+        <a class="link-arrow" href="{% url 'lounge:menu' %}">Start an order {% icon 'arrow-right' %}</a>
+      </article>
+      <article class="how-card">
+        <h3>{% icon 'calendar' %} Request a table</h3>
+        <ol class="steps">
+          <li><strong>Choose a time.</strong> Pick a date, a time and the size of your party.</li>
+          <li><strong>Wait for confirmation.</strong> Your request is saved as pending until a member of staff reviews it.</li>
+          <li><strong>Check its status.</strong> Your request page shows whether it's confirmed or declined, with any note from staff.</li>
+        </ol>
+        <a class="link-arrow" href="{% url 'lounge:reserve' %}">Request a table {% icon 'arrow-right' %}</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tinted" aria-labelledby="brew-title">
+  <div class="container brew">
+    <div class="brew__intro">
+      <p class="eyebrow">Brewing at home</p>
+      <h2 id="brew-title">A simple brew guide</h2>
+      <p>Hotter water and longer steeping pull out more bitterness, so delicate teas need cooler water. These are general starting points; adjust them to taste.</p>
+    </div>
+    <div class="table-wrap">
+      <table class="brew-table">
+        <caption class="visually-hidden">Suggested water temperature and steeping time by type of tea</caption>
+        <thead><tr><th scope="col">Tea</th><th scope="col">Water</th><th scope="col">Steep</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Green</th><td>70–80°C</td><td>1–3 min</td></tr>
+          <tr><th scope="row">White</th><td>75–85°C</td><td>3–5 min</td></tr>
+          <tr><th scope="row">Oolong</th><td>85–95°C</td><td>2–4 min</td></tr>
+          <tr><th scope="row">Black</th><td>90–100°C</td><td>3–5 min</td></tr>
+          <tr><th scope="row">Herbal</th><td>100°C</td><td>5–7 min</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="visit-title">
+  <div class="container">
+    <div class="cta-band">
+      <div>
+        <h2 id="visit-title">Planning a longer visit?</h2>
+        <p>Send a table request for up to {{ max_party }} people. For a bigger group, send a message instead.</p>
+      </div>
+      <div class="button-row">
+        <a class="btn btn--on-dark btn--large" href="{% url 'lounge:reserve' %}">Request a table</a>
+        <a class="btn btn--ghost-light btn--large" href="{% url 'lounge:contact' %}?topic=group">Send a message</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

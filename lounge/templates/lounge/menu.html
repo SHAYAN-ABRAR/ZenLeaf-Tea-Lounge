@@ -1,0 +1,81 @@
+{% extends "lounge/base.html" %}
+{% load lounge_tags %}
+{% block title %}Menu · ZenLeaf Tea Lounge{% endblock %}
+{% block description %}The ZenLeaf demo menu: green, black and herbal teas, matcha and lattes, iced teas and small bites, with brewing notes.{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="container">
+    <p class="eyebrow">Menu</p>
+    <h1>Teas, lattes and small bites</h1>
+    <p class="lede">Every tea lists its caffeine level and how it's brewed. Prices and availability are examples for this demo.</p>
+  </div>
+</div>
+
+<div class="container menu-layout">
+  <div class="menu-filters">
+    <nav class="chip-row" aria-label="Menu categories">
+      <a class="chip" href="{% query_with category=None page=None %}"{% if not active_category %} aria-current="true"{% endif %}>All</a>
+      {% for category in categories %}
+      <a class="chip" href="{% query_with category=category.slug %}"{% if active_category == category %} aria-current="true"{% endif %}>{{ category.name }}</a>
+      {% endfor %}
+    </nav>
+    <form class="search-form" method="get" action="{% url 'lounge:menu' %}" role="search" data-menu-filters>
+      {% if active_category %}<input type="hidden" name="category" value="{{ active_category.slug }}">{% endif %}
+      <div class="search-form__field">
+        <label class="visually-hidden" for="menu-search">Search the menu</label>
+        {% icon 'search' 'search-form__icon' %}
+        <input id="menu-search" type="search" name="q" value="{{ query }}" placeholder="Search, e.g. jasmine or malty" maxlength="60" autocomplete="off">
+      </div>
+      <label class="toggle">
+        <input type="checkbox" name="available" value="1"{% if available_only %} checked{% endif %} data-auto-submit>
+        <span>Available now</span>
+      </label>
+      <button class="btn btn--secondary" type="submit">Search</button>
+    </form>
+  </div>
+
+  {% if unknown_category %}
+  <div class="alert alert--info" role="status">{% icon 'info' %}<p>That category isn't on the menu, so all items are shown.</p></div>
+  {% endif %}
+
+  {% if filtered %}
+    <h2 class="visually-hidden">Matching items</h2>
+    <p class="result-count" id="result-count">
+      {{ products|length }} item{{ products|length|pluralize }}{% if active_category %} in {{ active_category.name }}{% endif %}{% if query %} matching “{{ query }}”{% endif %}{% if available_only %}, available now{% endif %}.
+      <a href="{% url 'lounge:menu' %}">Clear filters</a>
+    </p>
+    {% if products %}
+    <div class="product-grid">
+      {% for product in products %}{% include "lounge/partials/product_card.html" %}{% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      {% icon 'search' 'empty-state__icon' %}
+      <h2>Nothing matches</h2>
+      <p>Try a different word, such as “green”, “malty” or “caffeine-free”, or clear the filters.</p>
+      <a class="btn btn--secondary" href="{% url 'lounge:menu' %}">Show the whole menu</a>
+    </div>
+    {% endif %}
+  {% else %}
+    {% for category, items in groups %}
+    {% if items %}
+    <section class="menu-section" aria-labelledby="cat-{{ category.slug }}">
+      <div class="menu-section__head">
+        <h2 id="cat-{{ category.slug }}">{{ category.name }}</h2>
+        <p>{{ category.description }}</p>
+      </div>
+      <div class="product-grid">
+        {% for product in items %}{% include "lounge/partials/product_card.html" %}{% endfor %}
+      </div>
+    </section>
+    {% endif %}
+    {% empty %}
+    <div class="empty-state">
+      {% icon 'leaf' 'empty-state__icon' %}
+      <h2>The menu is empty</h2>
+      <p>No items are on the menu yet. If you run this demo, load the sample menu with <code>python manage.py seed_demo</code>.</p>
+    </div>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}

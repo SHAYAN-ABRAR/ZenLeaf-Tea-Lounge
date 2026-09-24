@@ -1,0 +1,42 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Orders{% endblock %}
+{% block content %}
+<div class="staff-head">
+  <div><h1>Orders</h1><p class="muted">Guest orders for pickup. Open a row to update its status.</p></div>
+</div>
+<nav class="chip-row" aria-label="Filter orders by status">
+  {% for key, label in filters %}<a class="chip" href="?status={{ key }}{% if query %}&amp;q={{ query|urlencode }}{% endif %}"{% if key == status %} aria-current="true"{% endif %}>{{ label }}</a>{% endfor %}
+</nav>
+<form class="filter-bar filter-bar--compact" method="get">
+  <input type="hidden" name="status" value="{{ status }}">
+  <div class="filter-bar__field"><label for="order-q">Search by number, name or email</label><input id="order-q" type="search" name="q" value="{{ query }}" maxlength="60"></div>
+  <button class="btn btn--secondary" type="submit">Search</button>
+</form>
+{% if page.object_list %}
+<table class="data-table">
+  <caption class="visually-hidden">Orders</caption>
+  <thead><tr><th scope="col">Order</th><th scope="col">Placed</th><th scope="col">Guest</th><th scope="col">Items</th><th scope="col">Total</th><th scope="col">Status</th></tr></thead>
+  <tbody>
+    {% for order in page.object_list %}
+    <tr>
+      <td data-label="Order"><a href="{% url 'staff:order_detail' order.pk %}"><strong>{{ order.number }}</strong></a></td>
+      <td data-label="Placed">{{ order.created_at|date:"j M" }}, {{ order.created_at|clock }}</td>
+      <td data-label="Guest">{{ order.customer_name }}</td>
+      <td data-label="Items">{{ order.item_count }}</td>
+      <td data-label="Total">{{ order.subtotal|money }}</td>
+      <td data-label="Status"><span class="badge badge--{{ order.status|status_tone }}">{{ order.get_status_display }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include "staff/pagination.html" %}
+{% else %}
+<div class="empty-state">
+  {% icon 'bag' 'empty-state__icon' %}
+  <h2>No orders here</h2>
+  <p>{% if query %}Nothing matches “{{ query }}”.{% else %}Orders appear when a guest checks out from the cart.{% endif %}</p>
+  {% if status != 'all' or query %}<a class="btn btn--secondary" href="?status=all">Show all orders</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Table requests{% endblock %}
+{% block content %}
+<div class="staff-head"><div><h1>Table requests</h1><p class="muted">Confirm or decline requests. Guests see the result on their request page.</p></div></div>
+<form class="filter-bar" method="get">
+  <div class="filter-bar__field">
+    <label for="res-status">Status</label>
+    <select id="res-status" name="status" data-auto-submit>{% for key, label in statuses %}<option value="{{ key }}"{% if key == status %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  </div>
+  <div class="filter-bar__field">
+    <label for="res-when">Date</label>
+    <select id="res-when" name="when" data-auto-submit>{% for key, label in whens %}<option value="{{ key }}"{% if key == when %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+  </div>
+  <button class="btn btn--secondary" type="submit">Filter</button>
+</form>
+{% if page.object_list %}
+<table class="data-table">
+  <caption class="visually-hidden">Table requests</caption>
+  <thead><tr><th scope="col">Request</th><th scope="col">Date and time</th><th scope="col">Guest</th><th scope="col">Party</th><th scope="col">Status</th></tr></thead>
+  <tbody>
+    {% for r in page.object_list %}
+    <tr>
+      <td data-label="Request"><a href="{% url 'staff:reservation_detail' r.pk %}"><strong>{{ r.reference }}</strong></a></td>
+      <td data-label="Date and time">{{ r.date|date:"D j M Y" }}, {{ r.time|clock }}</td>
+      <td data-label="Guest">{{ r.name }}</td>
+      <td data-label="Party">{{ r.party_size }}</td>
+      <td data-label="Status"><span class="badge badge--{{ r.status|status_tone }}">{{ r.get_status_display }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include "staff/pagination.html" %}
+{% else %}
+<div class="empty-state">
+  {% icon 'calendar' 'empty-state__icon' %}
+  <h2>No table requests here</h2>
+  <p>Try another status or date filter. New requests arrive as pending.</p>
+  <a class="btn btn--secondary" href="?status=all&amp;when=all">Show every request</a>
+</div>
+{% endif %}
+{% endblock %}

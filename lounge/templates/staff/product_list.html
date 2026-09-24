@@ -1,0 +1,67 @@
+{% extends "staff/base.html" %}
+{% load static lounge_tags %}
+{% block title %}Products{% endblock %}
+{% block content %}
+<div class="staff-head">
+  <div>
+    <h1>Products</h1>
+    <p class="muted">Turn items on and off the menu, mark them sold out, or edit their details.</p>
+  </div>
+  <a class="btn" href="{% url 'staff:product_new' %}">{% icon 'plus' %}Add product</a>
+</div>
+
+<form class="filter-bar" method="get" action="{% url 'staff:products' %}">
+  <div class="filter-bar__field">
+    <label for="product-q">Search</label>
+    <input id="product-q" type="search" name="q" value="{{ query }}" maxlength="60">
+  </div>
+  <div class="filter-bar__field">
+    <label for="product-state">Show</label>
+    <select id="product-state" name="state" data-auto-submit>
+      {% for key, label in states %}<option value="{{ key }}"{% if key == state %} selected{% endif %}>{{ label }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="filter-bar__field">
+    <label for="product-category">Category</label>
+    <select id="product-category" name="category" data-auto-submit>
+      <option value="">All categories</option>
+      {% for c in categories %}<option value="{{ c.slug }}"{% if c.slug == category %} selected{% endif %}>{{ c.name }}</option>{% endfor %}
+    </select>
+  </div>
+  <button class="btn btn--secondary" type="submit">Filter</button>
+</form>
+
+{% if page.object_list %}
+<table class="data-table">
+  <caption class="visually-hidden">Products, {{ page.paginator.count }} in total</caption>
+  <thead>
+    <tr><th scope="col">Product</th><th scope="col">Price</th><th scope="col">On menu</th><th scope="col">Available</th><th scope="col">Featured</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr>
+  </thead>
+  <tbody>
+    {% for product in page.object_list %}
+    <tr>
+      <td data-label="Product">
+        <div class="product-cell">
+          <img src="{% static product.illustration_path %}" alt="" width="64" height="48">
+          <div><a href="{% url 'staff:product_edit' product.pk %}"><strong>{{ product.name }}</strong></a><br><span class="muted small">{{ product.category.name }}</span></div>
+        </div>
+      </td>
+      <td data-label="Price">{{ product.price|money }}</td>
+      <td data-label="On menu">{% include "staff/toggle.html" with field="is_listed" value=product.is_listed on="On menu" off="Hidden" %}</td>
+      <td data-label="Available">{% include "staff/toggle.html" with field="is_available" value=product.is_available on="Available" off="Sold out" %}</td>
+      <td data-label="Featured">{% include "staff/toggle.html" with field="is_featured" value=product.is_featured on="Featured" off="Not featured" %}</td>
+      <td data-label="Actions"><a class="btn btn--quiet btn--small" href="{% url 'staff:product_edit' product.pk %}">{% icon 'edit' %}Edit<span class="visually-hidden"> {{ product.name }}</span></a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include "staff/pagination.html" %}
+{% else %}
+<div class="empty-state">
+  {% icon 'search' 'empty-state__icon' %}
+  <h2>No products match</h2>
+  <p>Try a different filter{% if not query and state == 'all' and not category %}, or add the first product{% endif %}.</p>
+  <a class="btn btn--secondary" href="{% url 'staff:products' %}">Clear filters</a>
+</div>
+{% endif %}
+{% endblock %}

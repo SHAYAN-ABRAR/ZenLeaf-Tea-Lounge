@@ -1,0 +1,52 @@
+{% extends "lounge/base.html" %}
+{% load lounge_tags %}
+{% block title %}Table request {{ reservation.reference }} · ZenLeaf Tea Lounge{% endblock %}
+{% block content %}
+<div class="page-head page-head--compact">
+  <div class="container">
+    <p class="eyebrow">Table request</p>
+    <h1>Request {{ reservation.reference }}</h1>
+  </div>
+</div>
+<div class="container status-layout">
+  <section class="status-card" aria-labelledby="res-status-title">
+    <h2 id="res-status-title">Status: <span class="badge badge--{{ reservation.status|status_tone }}">{{ reservation.get_status_display }}</span></h2>
+    {% if reservation.status == "pending" %}
+    <p>Your request is waiting for a member of staff to confirm it. Check back on this page for updates.</p>
+    {% elif reservation.status == "confirmed" %}
+    <p>Your table is confirmed.</p>
+    {% elif reservation.status == "declined" %}
+    <p>Sorry, this request was declined.</p>
+    {% else %}
+    <p>This request was cancelled.</p>
+    {% endif %}
+    {% if reservation.guest_message %}
+    <blockquote class="staff-note"><p>{{ reservation.guest_message }}</p><footer>Note from staff</footer></blockquote>
+    {% endif %}
+    <dl class="facts facts--grid">
+      <div><dt>{% icon 'calendar' %}Date</dt><dd>{{ reservation.date|date:"l, j F Y" }}</dd></div>
+      <div><dt>{% icon 'clock' %}Time</dt><dd>{{ time_label }}</dd></div>
+      <div><dt>{% icon 'users' %}Party</dt><dd>{{ reservation.party_size }} {{ reservation.party_size|pluralize:"person,people" }}</dd></div>
+      <div><dt>{% icon 'user' %}Name</dt><dd>{{ reservation.name }}</dd></div>
+    </dl>
+    <div class="notice">{% icon 'info' %}<p>Keep this page's address to check the status later. This demo doesn't send emails or texts.</p></div>
+    <div class="button-row">
+      <a class="btn btn--secondary" href="{{ request.path }}">Refresh status</a>
+      {% if can_cancel %}
+      <details class="confirm-details">
+        <summary class="btn btn--quiet">Cancel this request</summary>
+        <form method="post" action="{% url 'lounge:reservation_cancel' reservation.token %}" class="confirm-details__panel">
+          {% csrf_token %}
+          <p>Cancel request {{ reservation.reference }}? This can't be undone.</p>
+          <button class="btn btn--danger" type="submit">Yes, cancel it</button>
+        </form>
+      </details>
+      {% endif %}
+    </div>
+  </section>
+  <aside class="side-note">
+    <h2>Need to change something?</h2>
+    <p>Cancel this request and send a new one, or <a href="{% url 'lounge:contact' %}">send a message</a> with your reference, {{ reservation.reference }}.</p>
+  </aside>
+</div>
+{% endblock %}

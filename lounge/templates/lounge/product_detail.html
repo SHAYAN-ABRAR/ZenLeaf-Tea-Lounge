@@ -1,0 +1,64 @@
+{% extends "lounge/base.html" %}
+{% load static lounge_tags %}
+{% block title %}{{ product.name }} · ZenLeaf Tea Lounge{% endblock %}
+{% block description %}{{ product.short_description }}{% endblock %}
+{% block content %}
+<div class="container">
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="{% url 'lounge:menu' %}">Menu</a></li>
+      <li><a href="{% url 'lounge:menu' %}?category={{ product.category.slug }}">{{ product.category.name }}</a></li>
+      <li><span aria-current="page">{{ product.name }}</span></li>
+    </ol>
+  </nav>
+
+  <article class="product-detail">
+    <div class="product-detail__art">
+      <img src="{% static product.illustration_path %}" alt="{{ product.illustration_alt }}" width="480" height="360">
+    </div>
+    <div class="product-detail__info">
+      <p class="eyebrow">{{ product.category.name }}</p>
+      <h1>{{ product.name }}</h1>
+      <p class="product-detail__price">{{ product.price|money }}
+        {% if product.is_available %}<span class="badge badge--success">{% icon 'check' %}Available</span>
+        {% else %}<span class="badge badge--muted">Sold out</span>{% endif %}
+      </p>
+      <p class="lede">{{ product.short_description }}</p>
+      {% if product.description %}<p>{{ product.description }}</p>{% endif %}
+
+      <dl class="facts">
+        {% if product.caffeine %}<div><dt>{% icon 'bolt' %}Caffeine</dt><dd>{{ product.caffeine_short }}</dd></div>{% endif %}
+        {% if product.brew_temperature_c %}<div><dt>{% icon 'thermometer' %}Water</dt><dd>{{ product.brew_temperature_c }}°C</dd></div>{% endif %}
+        {% if product.brew_time %}<div><dt>{% icon 'timer' %}Steep</dt><dd>{{ product.brew_time }}</dd></div>{% endif %}
+        {% if product.notes_list %}<div><dt>{% icon 'leaf' %}Tasting notes</dt><dd>{{ product.notes_list|join:", " }}</dd></div>{% endif %}
+        {% if product.allergens %}<div><dt>{% icon 'info' %}Allergens</dt><dd>{{ product.allergens }}</dd></div>{% endif %}
+      </dl>
+
+      {% if product.is_available %}
+      <form class="add-form" method="post" action="{% url 'lounge:cart_add' %}" data-cart-form>
+        {% csrf_token %}
+        <input type="hidden" name="product_id" value="{{ product.pk }}">
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <div class="add-form__qty">
+          <label for="qty">Quantity</label>
+          <input id="qty" type="number" name="quantity" value="1" min="1" max="20" inputmode="numeric">
+        </div>
+        <button class="btn btn--large" type="submit" data-pending-text="Adding…">{% icon 'plus' %}Add to cart</button>
+      </form>
+      {% if in_cart %}<p class="muted">You have {{ in_cart }} in your cart. <a href="{% url 'lounge:cart' %}">View cart</a></p>{% endif %}
+      {% else %}
+      <div class="alert alert--info" role="status">{% icon 'info' %}<p>This item is sold out right now, so it can't be ordered. Other items in {{ product.category.name }} are below.</p></div>
+      {% endif %}
+    </div>
+  </article>
+
+  {% if related %}
+  <section class="section section--related" aria-labelledby="related-title">
+    <h2 id="related-title">More in {{ product.category.name }}</h2>
+    <div class="product-grid">
+      {% for product in related %}{% include "lounge/partials/product_card.html" %}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

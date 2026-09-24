@@ -1,0 +1,12 @@
+{% extends "lounge/base.html" %}
+{% block title %}Not allowed · ZenLeaf Tea Lounge{% endblock %}
+{% block content %}
+<div class="container error-page">
+  <p class="eyebrow">Error 403</p>
+  <h1>You don't have access to this page</h1>
+  <p class="lede">The staff area is only for staff accounts. If you're staff, sign in with a staff account.</p>
+  <div class="button-row">
+    <a class="btn" href="{% url 'lounge:home' %}">Go to the home page</a>
+  </div>
+</div>
+{% endblock %}

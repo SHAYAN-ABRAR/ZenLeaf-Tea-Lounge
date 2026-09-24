@@ -1,0 +1,14 @@
+{% extends "lounge/base.html" %}
+{% load lounge_tags %}
+{% block title %}Page not found · ZenLeaf Tea Lounge{% endblock %}
+{% block content %}
+<div class="container error-page">
+  <p class="eyebrow">Error 404</p>
+  <h1>We couldn't find that page</h1>
+  <p class="lede">The link may be old, or the item may have left the menu.</p>
+  <div class="button-row">
+    <a class="btn" href="{% url 'lounge:menu' %}">Browse the menu</a>
+    <a class="btn btn--secondary" href="{% url 'lounge:home' %}">Go to the home page</a>
+  </div>
+</div>
+{% endblock %}

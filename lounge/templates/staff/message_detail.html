@@ -1,0 +1,22 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Message from {{ item.name }}{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="{% url 'staff:messages' %}">Messages</a></li><li><span aria-current="page">{{ item.name }}</span></li></ol></nav>
+<article class="panel message-detail">
+  <h1>{{ item.get_topic_display }}</h1>
+  <dl class="facts facts--inline">
+    <div><dt>From</dt><dd>{{ item.name }}</dd></div>
+    <div><dt>Email</dt><dd>{{ item.email }}</dd></div>
+    <div><dt>Received</dt><dd>{{ item.created_at|date:"j F Y" }} at {{ item.created_at|clock }}</dd></div>
+    <div><dt>Status</dt><dd>{% if item.is_handled %}Handled{% else %}To handle{% endif %}</dd></div>
+  </dl>
+  <div class="message-detail__body">{{ item.message|linebreaks }}</div>
+  <form method="post" action="{% url 'staff:message_toggle' item.pk %}" class="form-actions">
+    {% csrf_token %}
+    <button class="btn" type="submit">{% if item.is_handled %}Move back to “to handle”{% else %}{% icon 'check' %}Mark as handled{% endif %}</button>
+    <a class="btn btn--secondary" href="{% url 'staff:messages' %}">Back to messages</a>
+  </form>
+  <p class="muted small">This demo can't send replies. Reply from your own email if the address is real.</p>
+</article>
+{% endblock %}

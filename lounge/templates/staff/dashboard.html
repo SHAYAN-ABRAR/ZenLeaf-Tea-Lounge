@@ -1,0 +1,42 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="staff-head">
+  <h1>Dashboard</h1>
+  <p class="muted">Signed in as {{ user.get_username }}.</p>
+</div>
+<ul class="stat-grid">
+  <li><a class="stat" href="{% url 'staff:orders' %}?status=received"><span class="stat__value">{{ counts.new_orders }}</span><span class="stat__label">New order{{ counts.new_orders|pluralize }}</span><span class="stat__hint">{{ counts.open_orders }} open in total</span></a></li>
+  <li><a class="stat" href="{% url 'staff:reservations' %}"><span class="stat__value">{{ counts.pending_reservations }}</span><span class="stat__label">Pending table request{{ counts.pending_reservations|pluralize }}</span><span class="stat__hint">{{ counts.today_reservations }} for today</span></a></li>
+  <li><a class="stat" href="{% url 'staff:messages' %}"><span class="stat__value">{{ counts.new_messages }}</span><span class="stat__label">Message{{ counts.new_messages|pluralize }} to handle</span><span class="stat__hint">From the contact form</span></a></li>
+  <li><a class="stat" href="{% url 'staff:products' %}?state=sold-out"><span class="stat__value">{{ counts.sold_out }}</span><span class="stat__label">Sold-out item{{ counts.sold_out|pluralize }}</span><span class="stat__hint">Shown on the menu, can't be ordered</span></a></li>
+</ul>
+
+<div class="staff-columns">
+  <section class="panel" aria-labelledby="recent-orders-title">
+    <div class="panel__head"><h2 id="recent-orders-title">Recent orders</h2><a href="{% url 'staff:orders' %}?status=all">All orders</a></div>
+    {% if recent_orders %}
+    <ul class="row-list">
+      {% for order in recent_orders %}
+      <li><a href="{% url 'staff:order_detail' order.pk %}"><span><strong>{{ order.number }}</strong> · {{ order.customer_name }}</span><span class="badge badge--{{ order.status|status_tone }}">{{ order.get_status_display }}</span></a></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-inline">No orders yet. They appear here when a guest checks out.</p>
+    {% endif %}
+  </section>
+  <section class="panel" aria-labelledby="pending-res-title">
+    <div class="panel__head"><h2 id="pending-res-title">Pending table requests</h2><a href="{% url 'staff:reservations' %}">All requests</a></div>
+    {% if pending_reservations %}
+    <ul class="row-list">
+      {% for r in pending_reservations %}
+      <li><a href="{% url 'staff:reservation_detail' r.pk %}"><span><strong>{{ r.reference }}</strong> · {{ r.name }}, {{ r.party_size }} {{ r.party_size|pluralize:"person,people" }}</span><span>{{ r.date|date:"D j M" }}, {{ r.time|clock }}</span></a></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="empty-inline">No pending requests for today or later.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

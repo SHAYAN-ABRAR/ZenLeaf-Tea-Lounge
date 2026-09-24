@@ -1,0 +1,26 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<div class="login-card">
+  <h1>{% icon 'lock' %} Staff sign-in</h1>
+  <p class="muted">Use a staff account created with <code>python manage.py createsuperuser</code>.</p>
+  <form method="post" action="{% url 'staff:login' %}" novalidate data-pending-form>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {% if form.errors %}
+    <div class="error-summary" role="alert" tabindex="-1" data-error-summary>
+      <h2 class="error-summary__title">{% icon 'alert' %} Sign-in failed</h2>
+      <ul>
+        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+        {% for field in form %}{% for error in field.errors %}<li><a href="#{{ field.id_for_label }}">{{ field.label }}: {{ error }}</a></li>{% endfor %}{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    {% include "lounge/partials/field.html" with field=form.username %}
+    {% include "lounge/partials/field.html" with field=form.password %}
+    <button class="btn btn--large btn--block" type="submit" data-pending-text="Signing in…">Sign in</button>
+  </form>
+  <p class="muted small">After {{ login_max_attempts }} failed attempts, sign-in is paused for {{ login_lockout_minutes }} minutes.</p>
+</div>
+{% endblock %}

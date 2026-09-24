@@ -1,0 +1,46 @@
+{% extends "lounge/base.html" %}
+{% load lounge_tags %}
+{% block title %}Request a table · ZenLeaf Tea Lounge{% endblock %}
+{% block description %}Send a table request to ZenLeaf Tea Lounge. Requests stay pending until staff confirm them.{% endblock %}
+{% block content %}
+<div class="page-head page-head--compact">
+  <div class="container">
+    <p class="eyebrow">Reservations</p>
+    <h1>Request a table</h1>
+    <p class="lede">Requests stay pending until a member of staff confirms them. This demo accepts times from {{ hours.opening }} to {{ hours.last }}, for up to {{ max_party }} people.</p>
+  </div>
+</div>
+<div class="container form-layout">
+  <form class="form-card" method="post" action="{% url 'lounge:reserve' %}" novalidate data-pending-form>
+    {% csrf_token %}
+    {% include "lounge/partials/error_summary.html" %}
+    <fieldset class="fieldset">
+      <legend>When</legend>
+      <div class="field-row field-row--3">
+        {% include "lounge/partials/field.html" with field=form.date %}
+        {% include "lounge/partials/field.html" with field=form.time %}
+        {% include "lounge/partials/field.html" with field=form.party_size %}
+      </div>
+      <p class="field__hint fieldset__note">Up to {{ max_party }} people. For a bigger group, <a href="{% url 'lounge:contact' %}?topic=group">send a message</a> instead.</p>
+    </fieldset>
+    <fieldset class="fieldset">
+      <legend>Your details</legend>
+      {% include "lounge/partials/field.html" with field=form.name %}
+      {% include "lounge/partials/field.html" with field=form.email %}
+      {% include "lounge/partials/field.html" with field=form.phone %}
+      {% include "lounge/partials/field.html" with field=form.notes %}
+    </fieldset>
+    {% include "lounge/partials/honeypot.html" %}
+    <button class="btn btn--large btn--block" type="submit" data-pending-text="Sending your request…">Send request</button>
+  </form>
+  <aside class="side-note">
+    <h2>What happens next</h2>
+    <ol class="steps steps--compact">
+      <li>Your request is saved with a reference number and the status <strong>Pending</strong>.</li>
+      <li>Staff confirm or decline it in the staff area.</li>
+      <li>Your request page shows the current status and any note from staff. Keep its address.</li>
+    </ol>
+    <p class="muted">This demo doesn't send confirmation emails or texts.</p>
+  </aside>
+</div>
+{% endblock %}

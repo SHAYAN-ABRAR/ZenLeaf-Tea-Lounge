@@ -1,0 +1,6 @@
+{% load lounge_tags %}<div class="field{% if field.errors %} field--error{% endif %}{% if wrapper_class %} {{ wrapper_class }}{% endif %}">
+  <label class="field__label" for="{{ field.id_for_label }}">{{ field.label }}{% if not field.field.required %} <span class="field__optional">(optional)</span>{% endif %}</label>
+  {% if field.help_text %}<p class="field__hint" id="{{ field.auto_id }}-hint">{{ field.help_text }}</p>{% endif %}
+  {% if field.errors %}<p class="field__error" id="{{ field.auto_id }}-error">{% icon 'alert' %}<span>{{ field.errors|join:" " }}</span></p>{% endif %}
+  {% render_field field %}
+</div>

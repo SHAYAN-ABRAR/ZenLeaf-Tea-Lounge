@@ -1,0 +1,6 @@
+{% load lounge_tags %}<div class="field field--check{% if field.errors %} field--error{% endif %}">
+  {% render_field field %}
+  <label for="{{ field.id_for_label }}">{{ field.label|capfirst }}</label>
+  {% if field.help_text %}<p class="field__hint" id="{{ field.auto_id }}-hint">{{ field.help_text }}</p>{% endif %}
+  {% if field.errors %}<p class="field__error" id="{{ field.auto_id }}-error">{{ field.errors|join:" " }}</p>{% endif %}
+</div>

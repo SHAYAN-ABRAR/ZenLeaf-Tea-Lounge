@@ -1,0 +1,37 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Request {{ reservation.reference }}{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="{% url 'staff:reservations' %}">Table requests</a></li><li><span aria-current="page">{{ reservation.reference }}</span></li></ol></nav>
+<div class="staff-head">
+  <div>
+    <h1>Request {{ reservation.reference }} <span class="badge badge--{{ reservation.status|status_tone }}">{{ reservation.get_status_display }}</span></h1>
+    <p class="muted">Received {{ reservation.created_at|date:"j F Y" }} at {{ reservation.created_at|clock }}</p>
+  </div>
+  <a class="btn btn--quiet btn--small" href="{{ reservation.get_absolute_url }}">Guest's request page {% icon 'arrow-right' %}</a>
+</div>
+<div class="staff-columns">
+  <section class="panel" aria-labelledby="details-title">
+    <h2 id="details-title">Details</h2>
+    <dl class="facts">
+      <div><dt>Date</dt><dd>{{ reservation.date|date:"l, j F Y" }}</dd></div>
+      <div><dt>Time</dt><dd>{{ time_label }}</dd></div>
+      <div><dt>Party</dt><dd>{{ reservation.party_size }} {{ reservation.party_size|pluralize:"person,people" }}</dd></div>
+      <div><dt>Name</dt><dd>{{ reservation.name }}</dd></div>
+      <div><dt>Email</dt><dd>{{ reservation.email }}</dd></div>
+      <div><dt>Phone</dt><dd>{{ reservation.phone|default:"Not given" }}</dd></div>
+      <div><dt>Notes</dt><dd>{{ reservation.notes|default:"None" }}</dd></div>
+    </dl>
+  </section>
+  <section class="panel" aria-labelledby="decide-title">
+    <h2 id="decide-title">Update request</h2>
+    <form method="post" novalidate data-pending-form>
+      {% csrf_token %}
+      {% include "lounge/partials/error_summary.html" %}
+      {% include "lounge/partials/field.html" with field=form.status %}
+      {% include "lounge/partials/field.html" with field=form.guest_message %}
+      <button class="btn btn--block" type="submit" data-pending-text="Saving…">Save</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

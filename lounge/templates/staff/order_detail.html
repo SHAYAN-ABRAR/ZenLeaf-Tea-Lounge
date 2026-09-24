@@ -1,0 +1,46 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Order {{ order.number }}{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="{% url 'staff:orders' %}">Orders</a></li><li><span aria-current="page">{{ order.number }}</span></li></ol></nav>
+<div class="staff-head">
+  <div>
+    <h1>Order {{ order.number }} <span class="badge badge--{{ order.status|status_tone }}">{{ order.get_status_display }}</span></h1>
+    <p class="muted">Placed {{ order.created_at|date:"l j F Y" }} at {{ order.created_at|clock }} · last updated {{ order.updated_at|date:"j M" }}, {{ order.updated_at|clock }}</p>
+  </div>
+  <a class="btn btn--quiet btn--small" href="{{ order.get_absolute_url }}">Guest's status page {% icon 'arrow-right' %}</a>
+</div>
+<div class="staff-columns">
+  <section class="panel" aria-labelledby="items-title">
+    <h2 id="items-title">Items</h2>
+    <table class="data-table data-table--plain">
+      <caption class="visually-hidden">Items in order {{ order.number }}</caption>
+      <thead><tr><th scope="col">Item</th><th scope="col">Qty</th><th scope="col">Price</th><th scope="col">Line total</th></tr></thead>
+      <tbody>
+        {% for item in order.items.all %}
+        <tr><td data-label="Item">{{ item.product_name }}</td><td data-label="Qty">{{ item.quantity }}</td><td data-label="Price">{{ item.unit_price|money }}</td><td data-label="Line total">{{ item.line_total|money }}</td></tr>
+        {% endfor %}
+      </tbody>
+      <tfoot><tr><th scope="row" colspan="3">Total</th><td data-label="Total"><strong>{{ order.subtotal|money }}</strong></td></tr></tfoot>
+    </table>
+    <h2>Guest</h2>
+    <dl class="facts">
+      <div><dt>Name</dt><dd>{{ order.customer_name }}</dd></div>
+      <div><dt>Email</dt><dd>{{ order.email }}</dd></div>
+      <div><dt>Phone</dt><dd>{{ order.phone|default:"Not given" }}</dd></div>
+      <div><dt>Notes</dt><dd>{{ order.notes|default:"None" }}</dd></div>
+    </dl>
+  </section>
+  <section class="panel" aria-labelledby="update-title">
+    <h2 id="update-title">Update status</h2>
+    <form method="post" novalidate data-pending-form>
+      {% csrf_token %}
+      {% include "lounge/partials/error_summary.html" %}
+      {% include "lounge/partials/field.html" with field=form.status %}
+      {% include "lounge/partials/field.html" with field=form.staff_note %}
+      <p class="muted small">The guest sees the new status on their status page. The internal note is only visible here.</p>
+      <button class="btn btn--block" type="submit" data-pending-text="Saving…">Save status</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

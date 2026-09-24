@@ -1,0 +1,19 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Delete {{ product.name }}{% endblock %}
+{% block content %}
+<div class="form-card">
+  <h1>Delete {{ product.name }}?</h1>
+  {% if ordered %}
+  <p>This product appears in {{ ordered }} past order line{{ ordered|pluralize }}. Those orders keep its name and price, but they'll no longer link to it.</p>
+  <p>To take it off the menu without losing it, <a href="{% url 'staff:product_edit' product.pk %}">hide it instead</a>.</p>
+  {% else %}
+  <p>It hasn't been ordered yet. Deleting it can't be undone.</p>
+  {% endif %}
+  <form method="post" class="form-actions">
+    {% csrf_token %}
+    <button class="btn btn--danger" type="submit">{% icon 'trash' %}Delete {{ product.name }}</button>
+    <a class="btn btn--secondary" href="{% url 'staff:product_edit' product.pk %}">Keep it</a>
+  </form>
+</div>
+{% endblock %}

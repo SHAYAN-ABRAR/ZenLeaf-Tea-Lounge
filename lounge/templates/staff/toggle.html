@@ -1,0 +1,9 @@
+{% load lounge_tags %}<form class="toggle-form" method="post" action="{% url 'staff:product_toggle' product.pk field %}" data-toggle-form>
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  <button type="submit" class="switch" role="switch" aria-checked="{{ value|yesno:'true,false' }}" data-on="{{ on }}" data-off="{{ off }}">
+    <span class="switch__track" aria-hidden="true"><span class="switch__thumb"></span></span>
+    <span class="switch__label">{% if value %}{{ on }}{% else %}{{ off }}{% endif %}</span>
+    <span class="visually-hidden"> for {{ product.name }}</span>
+  </button>
+</form>

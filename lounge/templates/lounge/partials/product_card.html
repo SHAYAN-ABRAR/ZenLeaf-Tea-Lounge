@@ -1,0 +1,24 @@
+{% load static lounge_tags %}<article class="product-card{% if not product.is_available %} is-sold-out{% endif %}">
+  <a class="product-card__media" href="{{ product.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+    <img src="{% static product.illustration_path %}" alt="" width="480" height="360" loading="lazy">
+  </a>
+  <div class="product-card__body">
+    <p class="product-card__category">{{ product.category.name }}</p>
+    <h3 class="product-card__title"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+    <p class="product-card__desc">{{ product.short_description }}</p>
+    {% include "lounge/partials/brew_meta.html" %}
+  </div>
+  <div class="product-card__footer">
+    <p class="price"><span class="visually-hidden">Price: </span>{{ product.price|money }}</p>
+    {% if product.is_available %}
+    <form method="post" action="{% url 'lounge:cart_add' %}" data-cart-form>
+      {% csrf_token %}
+      <input type="hidden" name="product_id" value="{{ product.pk }}">
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button class="btn btn--small" type="submit" data-pending-text="Adding…">{% icon 'plus' %}<span>Add<span class="visually-hidden"> {{ product.name }} to cart</span></span></button>
+    </form>
+    {% else %}
+    <p class="badge badge--muted">Sold out</p>
+    {% endif %}
+  </div>
+</article>

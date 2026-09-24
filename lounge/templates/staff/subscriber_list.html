@@ -1,0 +1,41 @@
+{% extends "staff/base.html" %}
+{% load lounge_tags %}
+{% block title %}Newsletter subscribers{% endblock %}
+{% block content %}
+<div class="staff-head">
+  <div><h1>Newsletter subscribers</h1><p class="muted">{{ total }} address{{ total|pluralize:"es" }}. This demo never sends email.</p></div>
+  {% if total %}<a class="btn btn--secondary" href="{% url 'staff:subscriber_export' %}">{% icon 'download' %}Download CSV</a>{% endif %}
+</div>
+{% if page.object_list %}
+<table class="data-table">
+  <caption class="visually-hidden">Newsletter subscribers</caption>
+  <thead><tr><th scope="col">Email</th><th scope="col">Signed up</th><th scope="col">From</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead>
+  <tbody>
+    {% for sub in page.object_list %}
+    <tr>
+      <td data-label="Email">{{ sub.email }}</td>
+      <td data-label="Signed up">{{ sub.created_at|date:"j M Y" }}, {{ sub.created_at|clock }}</td>
+      <td data-label="From">{{ sub.source|default:"—" }}</td>
+      <td data-label="Actions">
+        <details class="confirm-details">
+          <summary class="btn btn--quiet btn--small">{% icon 'trash' %}Remove<span class="visually-hidden"> {{ sub.email }}</span></summary>
+          <form method="post" action="{% url 'staff:subscriber_delete' sub.pk %}" class="confirm-details__panel">
+            {% csrf_token %}
+            <p>Remove {{ sub.email }}?</p>
+            <button class="btn btn--danger btn--small" type="submit">Yes, remove</button>
+          </form>
+        </details>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% include "staff/pagination.html" %}
+{% else %}
+<div class="empty-state">
+  {% icon 'mail' 'empty-state__icon' %}
+  <h2>No subscribers yet</h2>
+  <p>Sign-ups from the newsletter form in the site footer appear here.</p>
+</div>
+{% endif %}
+{% endblock %}

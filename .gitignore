@@ -1,0 +1,27 @@
+# Local settings and secrets
+.env
+
+# The SQLite database, its WAL/SHM side files, and backups
+data/
+backups/
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.coverage
+htmlcov/
+
+# Generated static files (python manage.py collectstatic)
+staticfiles/
+
+# Editors and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

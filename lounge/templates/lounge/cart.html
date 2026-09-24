@@ -1,0 +1,67 @@
+{% extends "lounge/base.html" %}
+{% load static lounge_tags %}
+{% block title %}Your cart · ZenLeaf Tea Lounge{% endblock %}
+{% block content %}
+<div class="page-head page-head--compact">
+  <div class="container">
+    <h1>Your cart</h1>
+  </div>
+</div>
+<div class="container">
+  {% if lines %}
+  <div class="cart-layout">
+    <section aria-labelledby="cart-items-title">
+      <h2 class="visually-hidden" id="cart-items-title">Items</h2>
+      <ul class="cart-lines">
+        {% for line in lines %}
+        <li class="cart-line{% if line.problem %} cart-line--problem{% endif %}">
+          <img class="cart-line__art" src="{% static line.product.illustration_path %}" alt="" width="96" height="72">
+          <div class="cart-line__info">
+            <h3 class="cart-line__name"><a href="{{ line.product.get_absolute_url }}">{{ line.product.name }}</a></h3>
+            <p class="muted">{{ line.product.price|money }} each</p>
+            {% if line.problem %}<p class="field__error">{% icon 'alert' %}<span>{{ line.problem }}</span></p>{% endif %}
+          </div>
+          <form class="qty-stepper" method="post" action="{% url 'lounge:cart_update' %}">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ line.product.pk }}">
+            <button class="icon-btn" type="submit" name="action" value="decrease" aria-label="Decrease quantity of {{ line.product.name }}"{% if line.problem %} disabled{% endif %}>{% icon 'minus' %}</button>
+            <span class="qty-stepper__value"><span class="visually-hidden">Quantity: </span>{{ line.quantity }}</span>
+            <button class="icon-btn" type="submit" name="action" value="increase" aria-label="Increase quantity of {{ line.product.name }}"{% if line.quantity >= max_quantity or line.problem %} disabled{% endif %}>{% icon 'plus' %}</button>
+          </form>
+          <p class="cart-line__total"><span class="visually-hidden">Line total: </span>{{ line.line_total|money }}</p>
+          <form class="cart-line__remove" method="post" action="{% url 'lounge:cart_update' %}">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ line.product.pk }}">
+            <button class="btn btn--quiet btn--small" type="submit" name="action" value="remove">{% icon 'trash' %}Remove<span class="visually-hidden"> {{ line.product.name }}</span></button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      <a class="link-arrow link-arrow--back" href="{% url 'lounge:menu' %}">{% icon 'arrow-left' %} Keep browsing</a>
+    </section>
+
+    <aside class="summary-card" aria-labelledby="summary-title">
+      <h2 id="summary-title">Summary</h2>
+      <dl class="summary-card__rows">
+        <div><dt>Items</dt><dd>{{ cart_count }}</dd></div>
+        <div class="summary-card__total"><dt>Total</dt><dd>{{ subtotal|money }}</dd></div>
+      </dl>
+      <p class="muted">Payment isn't taken online. This demo saves your order so staff can prepare it for pickup.</p>
+      {% if has_problems %}
+      <p class="field__error">{% icon 'alert' %}<span>Remove the items marked above to continue.</span></p>
+      <span class="btn btn--large btn--block is-disabled" aria-disabled="true">Continue to checkout</span>
+      {% else %}
+      <a class="btn btn--large btn--block" href="{% url 'lounge:checkout' %}">Continue to checkout {% icon 'arrow-right' %}</a>
+      {% endif %}
+    </aside>
+  </div>
+  {% else %}
+  <div class="empty-state empty-state--page">
+    {% icon 'bag' 'empty-state__icon' %}
+    <h2>Your cart is empty</h2>
+    <p>Add a tea, a latte or something to eat from the menu.</p>
+    <a class="btn btn--large" href="{% url 'lounge:menu' %}">Browse the menu</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% load static lounge_tags %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}Staff{% endblock %} · ZenLeaf staff</title>
+  <link rel="icon" href="{% static 'lounge/img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="preload" href="{% static 'lounge/fonts/manrope-latin-wght-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'lounge/css/site.css' %}">
+  <script src="{% static 'lounge/js/early.js' %}"></script>
+  <script src="{% static 'lounge/js/site.js' %}" defer></script>
+</head>
+<body class="staff">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="staff-header">
+    <div class="container staff-header__inner">
+      <a class="brand" href="{% url 'staff:dashboard' %}">
+        <img class="brand__mark" src="{% static 'lounge/img/logo.svg' %}" alt="" width="36" height="36">
+        <span class="brand__text"><span class="brand__name">ZenLeaf</span> <span class="brand__sub">Staff area</span></span>
+      </a>
+      <div class="staff-header__actions">
+        <a class="btn btn--quiet btn--small" href="{% url 'lounge:home' %}">View site</a>
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'staff:logout' %}">
+          {% csrf_token %}
+          <button class="btn btn--secondary btn--small" type="submit">{% icon 'logout' %}Sign out<span class="visually-hidden"> {{ user.get_username }}</span></button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% if user.is_authenticated and user.is_staff %}
+    <nav class="staff-nav" aria-label="Staff sections">
+      <ul class="container staff-nav__list">
+        <li><a href="{% url 'staff:dashboard' %}"{% if section == 'dashboard' %} aria-current="page"{% endif %}>Dashboard</a></li>
+        <li><a href="{% url 'staff:orders' %}"{% if section == 'orders' %} aria-current="page"{% endif %}>Orders{% if staff_counts.orders %} <span class="count-pill">{{ staff_counts.orders }}<span class="visually-hidden"> new</span></span>{% endif %}</a></li>
+        <li><a href="{% url 'staff:reservations' %}"{% if section == 'reservations' %} aria-current="page"{% endif %}>Reservations{% if staff_counts.reservations %} <span class="count-pill">{{ staff_counts.reservations }}<span class="visually-hidden"> pending</span></span>{% endif %}</a></li>
+        <li><a href="{% url 'staff:products' %}"{% if section == 'products' %} aria-current="page"{% endif %}>Products</a></li>
+        <li><a href="{% url 'staff:messages' %}"{% if section == 'messages' %} aria-current="page"{% endif %}>Messages{% if staff_counts.messages %} <span class="count-pill">{{ staff_counts.messages }}<span class="visually-hidden"> to handle</span></span>{% endif %}</a></li>
+        <li><a href="{% url 'staff:subscribers' %}"{% if section == 'subscribers' %} aria-current="page"{% endif %}>Subscribers</a></li>
+      </ul>
+    </nav>
+    {% endif %}
+  </header>
+
+  <main id="main" tabindex="-1" class="container staff-main">
+    {% if messages %}
+    <div class="flash-stack">
+      {% for message in messages %}
+      <div class="alert alert--{{ message.level_tag }}" role="{% if message.level_tag == 'error' %}alert{% else %}status{% endif %}">
+        {% if message.level_tag == 'success' %}{% icon 'check' %}{% elif message.level_tag == 'error' or message.level_tag == 'warning' %}{% icon 'alert' %}{% else %}{% icon 'info' %}{% endif %}
+        <p>{{ message }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+  <div class="toast" data-toast role="status" aria-live="polite" hidden><p class="toast__text" data-toast-text></p></div>
+</body>
+</html>

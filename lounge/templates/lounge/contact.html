@@ -1,0 +1,31 @@
+{% extends "lounge/base.html" %}
+{% load lounge_tags %}
+{% block title %}Contact · ZenLeaf Tea Lounge{% endblock %}
+{% block content %}
+<div class="page-head page-head--compact">
+  <div class="container">
+    <p class="eyebrow">Contact</p>
+    <h1>Send us a message</h1>
+    <p class="lede">Questions, feedback or a group booking? Messages are saved for staff to read in the staff area.</p>
+  </div>
+</div>
+<div class="container form-layout">
+  <form class="form-card" method="post" action="{% url 'lounge:contact' %}" novalidate data-pending-form>
+    {% csrf_token %}
+    {% include "lounge/partials/error_summary.html" %}
+    <div class="field-row">
+      {% include "lounge/partials/field.html" with field=form.name %}
+      {% include "lounge/partials/field.html" with field=form.email %}
+    </div>
+    {% include "lounge/partials/field.html" with field=form.topic %}
+    {% include "lounge/partials/field.html" with field=form.message %}
+    {% include "lounge/partials/honeypot.html" %}
+    <button class="btn btn--large btn--block" type="submit" data-pending-text="Sending…">Send message</button>
+  </form>
+  <aside class="side-note">
+    <h2>About this contact form</h2>
+    <p>ZenLeaf is a demo, so it has no phone line, street address or social accounts. Your message is stored in the local database, and no reply email is sent.</p>
+    <p>Sending the same message twice within a day saves it only once.</p>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% load lounge_tags %}{% if product.caffeine or product.brew_temperature_c or product.brew_time %}
+<ul class="meta-list">
+  {% if product.caffeine %}<li>{% icon 'bolt' %}{{ product.get_caffeine_display }}</li>{% endif %}
+  {% if product.brew_temperature_c %}<li>{% icon 'thermometer' %}{{ product.brew_temperature_c }}°C</li>{% endif %}
+  {% if product.brew_time %}<li>{% icon 'timer' %}{{ product.brew_time }}</li>{% endif %}
+</ul>
+{% endif %}

@@ -1,0 +1,23 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ZenLeaf Tea Lounge{% endblock %}</title>
+  <link rel="icon" href="{% static 'lounge/img/favicon.svg' %}" type="image/svg+xml">
+  <link rel="stylesheet" href="{% static 'lounge/css/site.css' %}">
+</head>
+<body class="minimal">
+  <header class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="/">
+        <img class="brand__mark" src="{% static 'lounge/img/logo.svg' %}" alt="" width="40" height="40">
+        <span class="brand__text"><span class="brand__name">ZenLeaf</span> <span class="brand__sub">Tea Lounge</span></span>
+      </a>
+    </div>
+  </header>
+  <main id="main" class="container error-page">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
