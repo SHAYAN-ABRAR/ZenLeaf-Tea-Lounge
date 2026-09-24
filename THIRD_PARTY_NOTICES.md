@@ -29,6 +29,6 @@ were also written for this project.
 
 ## Earlier version
 
-The static landing page that is still on the `main` branch used a third-party template. Its footer
-carried the line "© 2027 UIDesign.to - All rights reserved." No markup, styles, images or text from
-that page are used on this branch. See `docs/asset-audit.md`.
+The earlier static landing page, which is still in the repository's history (up to commit `be75543`),
+used a third-party template. Its footer carried the line "© 2027 UIDesign.to - All rights reserved."
+No markup, styles, images or text from that page are used in the current site. See `docs/asset-audit.md`.

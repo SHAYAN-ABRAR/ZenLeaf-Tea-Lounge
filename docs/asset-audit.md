@@ -1,7 +1,7 @@
 # Asset and copy audit
 
-This records what the earlier static page (`index.html` on `main`, commit `be75543`) contained, and
-what happened to each part in the full-stack rebuild on `feature/zenleaf-full-stack`.
+This records what the earlier static page (`index.html`, last present in commit `be75543`) contained,
+and what happened to each part in the full-stack rebuild.
 
 ## Findings in the earlier page
 
@@ -23,10 +23,10 @@ what happened to each part in the full-stack rebuild on `feature/zenleaf-full-st
 - **Images:** none of the 15 images had clear usage rights, so none were kept. The new site uses SVG
   illustrations drawn for the project (`tools/make_illustrations.py`).
 - **Template, markup and copy:** replaced completely. Nothing from the earlier page is reused, so its
-  "UIDesign.to" notice does not apply to the new files. The earlier page and its notice are unchanged
-  on `main`.
-- **Screenshots and GIF of the earlier page** (`screenshots/`): removed on this branch because they
-  show a page this branch no longer contains. They are still on `main`.
+  "UIDesign.to" notice does not apply to the new files. The earlier page and its notice remain in the
+  repository's history.
+- **Screenshots and GIF of the earlier page** (`screenshots/`): removed because they show a page the
+  site no longer contains. They remain in the repository's history.
 - **Reviews and ratings:** removed with no replacement. The site has no real customers, so it shows no
   reviews, ratings or testimonials.
 - **Business details:** the site states that the lounge is imaginary. It has no street address, phone

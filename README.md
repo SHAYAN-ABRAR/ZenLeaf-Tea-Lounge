@@ -1,6 +1,10 @@
 # ZenLeaf Tea Lounge
 
-A small tea lounge website with a real backend. Guests browse a menu stored in SQLite, order ahead for pickup, request a table and send messages. Staff sign in to manage the menu and handle what comes in. It's built with Django and runs on your own computer.
+A small tea lounge website with a real backend. Guests browse a menu stored in SQLite, order ahead for pickup, request a table and send messages. Staff sign in to manage the menu and handle what comes in. It's built with Django.
+
+**Live demo:** <https://shayan-abrar.github.io/ZenLeaf-Tea-Lounge/>
+
+The live demo is a browser-only edition of the same site: it runs on GitHub Pages and saves everything in your own browser (see [The online demo](#the-online-demo)). The full version, with its SQLite backend and staff sign-in, runs on your computer.
 
 ZenLeaf is a demo: the lounge, its menu and its prices are made up, and no payments are taken.
 
@@ -12,8 +16,6 @@ ZenLeaf is a demo: the lounge, its menu and its prices are made up, and no payme
   <img src="docs/screenshots/phone.png" width="800" alt="Three phone screens: the menu filtered to Matcha and lattes, a cart with two items and a total of 880 taka, and the confirmation page for order ZL-00002 with its status set to Received">
 </p>
 
-> **About the GitHub Pages site.** <https://shayan-abrar.github.io/ZenLeaf-Tea-Lounge/> still shows the earlier static landing page from the `main` branch. GitHub Pages only serves static files, so it can't run this version, which needs Python and a database. To try this version, run it locally as described below.
-
 ## What it does
 
 **For guests**
@@ -23,7 +25,7 @@ ZenLeaf is a demo: the lounge, its menu and its prices are made up, and no payme
 - **Table requests:** choose a date, time and party size. Requests start as **Pending** and change to Confirmed or Declined when staff answer. Guests can cancel from their request page.
 - **Contact form and newsletter:** both save to the database, show clear success and error messages, and catch duplicates instead of saving them twice.
 
-**For staff** (at `/staff/`, sign-in required)
+**For staff** (at `/staff/`; the full version requires sign-in)
 
 - Add, edit, hide or delete products, and switch items between available and sold out.
 - See orders and move them through Received, Being prepared, Ready for pickup, Collected or Cancelled, with an internal note.
@@ -43,7 +45,6 @@ You need **Python 3.10 or newer** and **Git**.
 ```bash
 git clone https://github.com/SHAYAN-ABRAR/ZenLeaf-Tea-Lounge.git
 cd ZenLeaf-Tea-Lounge
-git switch feature/zenleaf-full-stack
 python3 bootstrap.py
 .venv/bin/python manage.py runserver
 ```
@@ -53,12 +54,11 @@ python3 bootstrap.py
 ```powershell
 git clone https://github.com/SHAYAN-ABRAR/ZenLeaf-Tea-Lounge.git
 cd ZenLeaf-Tea-Lounge
-git switch feature/zenleaf-full-stack
 py bootstrap.py              # or: python bootstrap.py
 .venv\Scripts\python manage.py runserver
 ```
 
-Then open <http://127.0.0.1:8000/>. The staff area is at <http://127.0.0.1:8000/staff/>. Once this branch is merged into `main`, skip the `git switch` line.
+Then open <http://127.0.0.1:8000/>. The staff area is at <http://127.0.0.1:8000/staff/>.
 
 `bootstrap.py` is safe to run again. Each time, it:
 
@@ -93,6 +93,26 @@ Paste the printed value into `.env` after `DJANGO_SECRET_KEY=`, then:
 On Windows, use `py -m venv .venv`, `copy .env.example .env` and `.venv\Scripts\python` in place of `.venv/bin/python`.
 
 </details>
+
+## The online demo
+
+<https://shayan-abrar.github.io/ZenLeaf-Tea-Lounge/> shows the same pages without a server, because GitHub Pages can only serve files. What's different:
+
+- Your cart, orders, table requests, messages and sign-ups are saved in your browser's local storage instead of a database. Each visitor has their own copy, and nobody else sees what you enter.
+- The staff area opens without a password, so you can try both sides: place an order, then update it as staff and watch the order page change. It only changes the data in your own browser. The full version asks staff to sign in.
+- **Reset the demo** on the About page or the staff dashboard clears your data and restores the menu. Clearing the site's data in your browser does the same.
+- It needs JavaScript. Some private windows block local storage; the demo then warns you and forgets your changes when you leave the page.
+
+`manage.py build_demo` renders the site's own templates into static HTML, with the demo menu from `lounge/seed_data.py`. In the browser, `lounge/static/lounge/js/demo.js` fills in the data and follows the same rules and messages as the Django forms. On every push to `main`, the workflow in `.github/workflows/pages.yml` runs the tests, builds the demo and publishes it. For that, GitHub Pages must be set to deploy from GitHub Actions (**Settings → Pages → Build and deployment → Source: GitHub Actions**), a one-time setting.
+
+To preview the online demo on your computer:
+
+```bash
+.venv/bin/python manage.py build_demo --output _site
+.venv/bin/python -m http.server 8001 --directory _site
+```
+
+Then open <http://127.0.0.1:8001/> (on Windows, use `.venv\Scripts\python`).
 
 ## Staff accounts
 
@@ -159,36 +179,38 @@ All settings are read from `.env` (real environment variables take priority). `.
 .venv/bin/python manage.py test
 ```
 
-The 43 tests run against a temporary in-memory database and cover:
+The 49 tests run against a temporary in-memory database and cover:
 
 - the migrations, the demo seed, order numbering and pricing, and backup and restore;
 - menu filters, the cart, checkout, the check that one checkout page can't create two orders, and malformed requests;
 - table request rules, contact and newsletter duplicates, and the error pages;
-- staff sign-in, lockout, permissions and CSRF protection, the CSV export, and staff updates showing up on guest pages.
+- staff sign-in, lockout, permissions and CSRF protection, the CSV export, and staff updates showing up on guest pages;
+- the online demo build: every page written under the Pages address, with no server-only values in the files.
 
 ## How it's built
 
 - **Django 5.2** renders every page on the server and talks to SQLite through migrations. The site works without JavaScript; with JavaScript, adding to the cart, newsletter sign-up and the staff switches update in place without reloading.
 - **WhiteNoise** serves the CSS, JavaScript, fonts and images, even with debug mode off.
-- **No front-end build step.** It's plain CSS and two small scripts, and the fonts are included in the repository.
+- **No front-end build step.** It's plain CSS and a few small scripts, and the fonts are included in the repository.
 - **Accessibility:** labelled form fields with linked error messages, an error summary that receives focus, a skip link, visible focus outlines, keyboard-operable menus and switches, reduced-motion support, and layouts checked from 320 px to 1440 px wide.
 
 ```
-zenleaf/             Django project: settings (read from .env), URLs, security headers
-lounge/              the app: models, views, forms, templates, static files, tests
-lounge/management/   seed_demo, backup_db and restore_db commands
-tools/               script that draws the SVG illustrations
-docs/                screenshots and the asset audit
-bootstrap.py         one-command local setup
+zenleaf/                   Django project: settings (read from .env), URLs, security headers
+lounge/                    the app: models, views, forms, templates, static files, tests
+lounge/management/         seed_demo, backup_db, restore_db and build_demo commands
+lounge/templates/demo/     pages of the online demo
+lounge/static/lounge/js/   site.js for the full site, demo.js for the online demo
+.github/workflows/         builds and publishes the online demo on GitHub Pages
+tools/                     script that draws the SVG illustrations
+docs/                      screenshots and the asset audit
+bootstrap.py               one-command local setup
 ```
 
 If you edit CSS or JavaScript while the server runs with `DJANGO_DEBUG=false`, restart the server to see the change.
 
-## Deploying it later
+## Deploying the full version
 
-This version hasn't been deployed anywhere. GitHub Pages can't host it, because Pages only serves static files and can't run Django or write to a database. Merging this branch into `main` would also remove the earlier `index.html`, so the Pages site would stop showing the old page. Decide what Pages should show before merging.
-
-A future deployment would need:
+The online demo publishes itself (see above), but the full version with its SQLite backend hasn't been deployed anywhere. GitHub Pages can't host it, because Pages can't run Django or write to a database. A deployment would need:
 
 - **A host that runs Python**, such as a small virtual server or a platform that runs Python web apps.
 - **Persistent storage for the SQLite file.** Many platforms reset their disk on every deploy or restart, which would erase orders and requests. Point `ZENLEAF_DB_PATH` at a persistent disk or volume.
@@ -203,6 +225,7 @@ Taking real orders would also need things this demo doesn't have: a payment prov
 ## Limitations
 
 - It's a demo. No payments are taken and no emails or texts are sent; guests keep their private status link instead.
+- The online demo keeps data only in each visitor's browser, and its staff area is open to anyone who visits it.
 - Table requests aren't checked against capacity. Staff confirm or decline each one.
 - There are no customer accounts. Anyone with an order's or request's private link can view it.
 - The menu has a single currency and no taxes, discounts or order-ahead time slots.
