@@ -33,7 +33,7 @@ ZenLeaf is a demo: the lounge, its menu and its prices are made up, and no payme
 - Read contact messages and mark them handled. List newsletter subscribers and download them as CSV.
 
 <p align="center">
-  <img src="docs/screenshots/staff-products.png" width="800" alt="Staff products page: search and filter fields, and a table of green teas with On menu, Available and Featured switches and an Edit link on each row">
+  <img src="docs/screenshots/staff-products.png" width="800" alt="Staff products page: search and filter fields, and a table of herbal teas, each with a photo, On menu, Available and Featured switches and an Edit link">
 </p>
 
 ## Run it locally
