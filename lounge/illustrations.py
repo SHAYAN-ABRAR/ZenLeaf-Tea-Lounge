@@ -38,6 +38,10 @@ ILLUSTRATION_CHOICES = [(key, label) for key, (label, _alt) in ILLUSTRATIONS.ite
 # Alt text for the photos. A key that isn't listed here has no photo, so pages show its drawing.
 PHOTOS = {
     "cup-green": "A speckled stoneware cup of clear yellow-green tea on a saucer, with a few needle-shaped tea leaves",
+    "cup-jasmine": "A small speckled stoneware cup of pale golden-green tea on a saucer, with two white jasmine flowers beside it",
+    "cup-white": "A small speckled stoneware cup of very pale golden tea on a saucer, with a few silvery-green tea buds",
+    "cup-amber": "A speckled stoneware cup of clear light amber tea on a saucer",
+    "cup-dark": "A speckled stoneware cup of deep reddish-brown tea on a saucer, with a small jug of milk beside it",
     "cup-bergamot": "A speckled stoneware cup of dark amber tea on a saucer, with a slice of lemon",
     "cup-roasted": "A small speckled stoneware cup of copper-brown tea on a saucer, with a few tightly rolled tea leaves",
     "cup-chamomile": "A speckled stoneware cup of pale yellow infusion on a saucer, with dried chamomile flowers beside it",
