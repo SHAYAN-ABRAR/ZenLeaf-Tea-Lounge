@@ -1,0 +1,4 @@
+{% load static %}{% comment %}
+A product's picture: its photo when it has one (with a 480 and a 960 px version to choose from), otherwise its drawing.
+Pass product, alt, width, height and sizes; img_class and lazy are optional. Include it with "only".
+{% endcomment %}{% if product.photo_path %}<img{% if img_class %} class="{{ img_class }}"{% endif %} src="{% static product.photo_small_path %}" srcset="{% static product.photo_small_path %} 480w, {% static product.photo_path %} 960w" sizes="{{ sizes }}" alt="{{ alt }}" width="{{ width }}" height="{{ height }}"{% if lazy %} loading="lazy"{% endif %} decoding="async">{% else %}<img{% if img_class %} class="{{ img_class }}"{% endif %} src="{% static product.illustration_path %}" alt="{{ alt }}" width="{{ width }}" height="{{ height }}"{% if lazy %} loading="lazy"{% endif %}>{% endif %}

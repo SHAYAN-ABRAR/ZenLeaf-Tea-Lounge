@@ -21,7 +21,9 @@ and what happened to each part in the full-stack rebuild.
 ## Decisions
 
 - **Images:** none of the 15 images had clear usage rights, so none were kept. The new site uses SVG
-  illustrations drawn for the project (`tools/make_illustrations.py`).
+  illustrations drawn for the project (`tools/make_illustrations.py`). Later, the menu switched to
+  AI-generated photos, made for this project from the prompts in `docs/photo-prompts.md`; the
+  illustrations remain for any item without a photo. See THIRD_PARTY_NOTICES.md.
 - **Template, markup and copy:** replaced completely. Nothing from the earlier page is reused, so its
   "UIDesign.to" notice does not apply to the new files. The earlier page and its notice remain in the
   repository's history.

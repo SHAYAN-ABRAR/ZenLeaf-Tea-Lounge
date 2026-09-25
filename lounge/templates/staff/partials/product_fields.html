@@ -16,7 +16,7 @@
   <legend>Picture</legend>
   <div class="illustration-picker">
     {% include "lounge/partials/field.html" with field=form.illustration %}
-    <img class="illustration-picker__preview" src="{% if form.illustration.value %}{% static 'lounge/img/menu/' %}{{ form.illustration.value }}.svg{% endif %}" alt="Preview of the selected illustration" width="240" height="180" data-illustration-preview data-base="{% static 'lounge/img/menu/' %}"{% if not form.illustration.value %} hidden{% endif %}>
+    <img class="illustration-picker__preview" src="{{ form.illustration.value|picture_preview }}" alt="Preview of the selected picture" width="240" height="180" data-illustration-preview data-base="{% static 'lounge/img/menu/' %}" data-photo-base="{% static 'lounge/img/menu/photos/' %}" data-photos="{% photo_keys %}"{% if not form.illustration.value %} hidden{% endif %}>
   </div>
 </fieldset>
 <fieldset class="fieldset">

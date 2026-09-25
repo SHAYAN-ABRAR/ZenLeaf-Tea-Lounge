@@ -1,6 +1,6 @@
 {% load static lounge_tags %}<article class="product-card{% if not product.is_available %} is-sold-out{% endif %}">
   <a class="product-card__media" href="{{ product.get_absolute_url }}" tabindex="-1" aria-hidden="true">
-    <img src="{% static product.illustration_path %}" alt="" width="480" height="360" loading="lazy">
+    {% include "lounge/partials/product_picture.html" with product=product alt="" width=480 height=360 sizes="(max-width: 559px) 104px, 400px" lazy=True only %}
   </a>
   <div class="product-card__body">
     <p class="product-card__category">{{ product.category.name }}</p>

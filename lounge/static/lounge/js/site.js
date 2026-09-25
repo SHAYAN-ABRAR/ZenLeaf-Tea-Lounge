@@ -200,12 +200,17 @@
     });
   });
 
-  /* Staff: preview the chosen product illustration -------------------------------------------------------- */
+  /* Staff: preview the chosen product picture (its photo, or its drawing when it has no photo) ------------ */
   var preview = document.querySelector("[data-illustration-preview]");
   var picker = document.getElementById("id_illustration");
   if (preview && picker) {
+    var photoKeys = (preview.dataset.photos || "").split(" ");
     picker.addEventListener("change", function () {
-      if (picker.value) preview.src = preview.dataset.base + picker.value + ".svg";
+      if (picker.value) {
+        preview.src = photoKeys.indexOf(picker.value) !== -1
+          ? preview.dataset.photoBase + picker.value + "-480.webp"
+          : preview.dataset.base + picker.value + ".svg";
+      }
       preview.hidden = !picker.value;
     });
   }

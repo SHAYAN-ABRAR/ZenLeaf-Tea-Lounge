@@ -27,7 +27,7 @@ from lounge.forms import (
     CheckoutForm, ContactForm, OrderUpdateForm, ProductForm, ReservationForm, ReservationUpdateForm,
     format_time, reservation_slots,
 )
-from lounge.illustrations import ILLUSTRATIONS
+from lounge.illustrations import ILLUSTRATIONS, PHOTOS
 from lounge.models import ContactMessage, Order, Product, Reservation
 from lounge.seed_data import CATEGORIES, PRODUCTS
 from lounge.templatetags.lounge_tags import ICONS, STATUS_TONES
@@ -128,6 +128,7 @@ def demo_data(base):
         "categories": [vars(c) for c in demo_categories()],
         "products": demo_products(),
         "illustrations": {key: {"label": label, "alt": alt} for key, (label, alt) in ILLUSTRATIONS.items()},
+        "photos": dict(PHOTOS),   # key -> alt text, for the keys that have a photo
         "icons": ICONS,
         "labels": {
             "caffeine": dict(Product.Caffeine.choices),

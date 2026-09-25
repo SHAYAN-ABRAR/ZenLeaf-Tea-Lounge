@@ -2,8 +2,11 @@ from decimal import ROUND_HALF_UP, Decimal
 
 from django import template
 from django.conf import settings
+from django.templatetags.static import static
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+
+from ..illustrations import PHOTOS, photo_path
 
 register = template.Library()
 
@@ -115,3 +118,17 @@ STATUS_TONES = {
 @register.filter
 def status_tone(status):
     return STATUS_TONES.get(status, "neutral")
+
+
+@register.filter
+def picture_preview(key):
+    """URL of the small picture for a product picture key: its 480 px photo, or its drawing if it has no photo."""
+    if not key:
+        return ""
+    return static(photo_path(key, 480) or f"lounge/img/menu/{key}.svg")
+
+
+@register.simple_tag
+def photo_keys():
+    """The picture keys that have a photo, separated by spaces (read by the staff picture preview)."""
+    return " ".join(PHOTOS)

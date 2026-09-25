@@ -8,6 +8,8 @@ from django.core.management import CommandError, call_command
 from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
+from lounge.illustrations import PHOTOS
+
 from .utils import seed
 
 
@@ -65,6 +67,10 @@ class BuildDemoTests(SimpleTestCase):
         self.assertEqual({p["slug"] for p in data["products"] if not p["is_available"]}, {"hibiscus-cooler", "lemon-loaf"})
         self.assertIn("18:00", data["settings"]["slots"])
         self.assertEqual(data["labels"]["order_status"]["preparing"], "Being prepared")
+        self.assertEqual(data["photos"], PHOTOS)
+        for key in PHOTOS:
+            self.assertTrue((self.out / f"static/lounge/img/menu/photos/{key}-960.webp").is_file(), key)
+            self.assertTrue((self.out / f"static/lounge/img/menu/photos/{key}-480.webp").is_file(), key)
 
     def test_it_only_replaces_its_own_output(self):
         with tempfile.TemporaryDirectory() as folder:

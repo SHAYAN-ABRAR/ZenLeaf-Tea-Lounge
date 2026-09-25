@@ -42,7 +42,7 @@
     <tr>
       <td data-label="Product">
         <div class="product-cell">
-          <img src="{% static product.illustration_path %}" alt="" width="64" height="48">
+          {% include "lounge/partials/product_picture.html" with product=product alt="" width=64 height=48 sizes="64px" only %}
           <div><a href="{% url 'staff:product_edit' product.pk %}"><strong>{{ product.name }}</strong></a><br><span class="muted small">{{ product.category.name }}</span></div>
         </div>
       </td>

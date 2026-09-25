@@ -226,7 +226,8 @@ class ProductForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["category"].empty_label = "Choose a category"
-        self.fields["illustration"].choices = [("", "Choose an illustration")] + ILLUSTRATION_CHOICES
+        self.fields["illustration"].choices = [("", "Choose a picture")] + ILLUSTRATION_CHOICES
+        self.fields["illustration"].label = "Picture"
         self.fields["caffeine"].choices = [("", "Not applicable (food)")] + list(Product.Caffeine.choices)
         self.fields["sort_order"].label = "Sort order (lower comes first)"
 

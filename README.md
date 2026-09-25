@@ -179,13 +179,14 @@ All settings are read from `.env` (real environment variables take priority). `.
 .venv/bin/python manage.py test
 ```
 
-The 49 tests run against a temporary in-memory database and cover:
+The 57 tests run against a temporary in-memory database and cover:
 
 - the migrations, the demo seed, order numbering and pricing, and backup and restore;
 - menu filters, the cart, checkout, the check that one checkout page can't create two orders, and malformed requests;
 - table request rules, contact and newsletter duplicates, and the error pages;
 - staff sign-in, lockout, permissions and CSRF protection, the CSV export, and staff updates showing up on guest pages;
-- the online demo build: every page written under the Pages address, with no server-only values in the files.
+- the online demo build: every page written under the Pages address, with no server-only values in the files;
+- the menu pictures: every listed photo present at both sizes, photos on the menu, cart and staff pages, and the drawing when an item has no photo.
 
 ## How it's built
 
@@ -200,9 +201,10 @@ lounge/                    the app: models, views, forms, templates, static file
 lounge/management/         seed_demo, backup_db, restore_db and build_demo commands
 lounge/templates/demo/     pages of the online demo
 lounge/static/lounge/js/   site.js for the full site, demo.js for the online demo
+lounge/static/lounge/img/  logo, hero, menu drawings (menu/) and menu photos (menu/photos/)
 .github/workflows/         builds and publishes the online demo on GitHub Pages
-tools/                     script that draws the SVG illustrations
-docs/                      screenshots and the asset audit
+tools/                     scripts that draw the SVG illustrations and prepare the menu photos
+docs/                      screenshots, the asset audit and the photo prompts
 bootstrap.py               one-command local setup
 ```
 
@@ -233,7 +235,7 @@ Taking real orders would also need things this demo doesn't have: a payment prov
 
 ## Credits and license
 
-The illustrations, icons and copy were made for this project. The fonts are [Fraunces](https://github.com/undercasetype/Fraunces) and [Manrope](https://github.com/sharanda/manrope) under the SIL Open Font License 1.1; their license texts are in `lounge/static/lounge/fonts/`. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details, and [docs/asset-audit.md](docs/asset-audit.md) for what happened to the earlier page's template, images and copy. None of them are used here.
+The menu photos, illustrations, icons and copy were made for this project; [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md#menu-photos) says how the photos were made. The fonts are [Fraunces](https://github.com/undercasetype/Fraunces) and [Manrope](https://github.com/sharanda/manrope) under the SIL Open Font License 1.1; their license texts are in `lounge/static/lounge/fonts/`. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for details, and [docs/asset-audit.md](docs/asset-audit.md) for what happened to the earlier page's template, images and copy. None of them are used here.
 
 This repository doesn't have a license yet, so it doesn't grant permission to reuse or redistribute its code. Please ask before reusing any part of it.
 

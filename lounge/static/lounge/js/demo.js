@@ -186,6 +186,22 @@
   const productUrl = (p) => url("menu/item/?slug=" + encodeURIComponent(p.slug));
   const illustrationSrc = (key) => `${DATA.static}img/menu/${key}.svg`;
   const illustrationAlt = (key) => (DATA.illustrations[key] || { alt: "Illustration of a drink" }).alt;
+  // A picture key shows its photo when it has one (DATA.photos holds their alt text), otherwise its drawing.
+  const hasPhoto = (key) => Object.prototype.hasOwnProperty.call(DATA.photos || {}, key);
+  const photoSrc = (key, width) => `${DATA.static}img/menu/photos/${key}-${width}.webp`;
+  const pictureSrc = (key) => (hasPhoto(key) ? photoSrc(key, 480) : illustrationSrc(key));
+  const pictureAlt = (key) => (hasPhoto(key) ? DATA.photos[key] : illustrationAlt(key));
+
+  // The same <img> markup as lounge/partials/product_picture.html.
+  function pictureImg(key, { alt = "", width, height, sizes, cls = "", lazy = false }) {
+    const common = `alt="${esc(alt)}" width="${width}" height="${height}"${lazy ? ' loading="lazy"' : ""}`;
+    const classAttr = cls ? ` class="${cls}"` : "";
+    if (hasPhoto(key)) {
+      return `<img${classAttr} src="${photoSrc(key, 480)}" srcset="${photoSrc(key, 480)} 480w, ${photoSrc(key, 960)} 960w" ` +
+        `sizes="${sizes}" ${common} decoding="async">`;
+    }
+    return `<img${classAttr} src="${illustrationSrc(key)}" ${common}>`;
+  }
 
   function menuOrder(a, b) {
     const ca = categoryBySlug(a.category), cb = categoryBySlug(b.category);
@@ -280,7 +296,8 @@
       ? `<button class="btn btn--small" type="button" data-add="${p.id}">${icon("plus")}<span>Add<span class="visually-hidden"> ${esc(p.name)} to cart</span></span></button>`
       : `<p class="badge badge--muted">Sold out</p>`;
     return `<article class="product-card${p.is_available ? "" : " is-sold-out"}">` +
-      `<a class="product-card__media" href="${link}" tabindex="-1" aria-hidden="true"><img src="${illustrationSrc(p.illustration)}" alt="" width="480" height="360" loading="lazy"></a>` +
+      `<a class="product-card__media" href="${link}" tabindex="-1" aria-hidden="true">` +
+      `${pictureImg(p.illustration, { width: 480, height: 360, sizes: "(max-width: 559px) 104px, 400px", lazy: true })}</a>` +
       `<div class="product-card__body"><p class="product-card__category">${esc(categoryName(p))}</p>` +
       `<h3 class="product-card__title"><a href="${link}">${esc(p.name)}</a></h3>` +
       `<p class="product-card__desc">${esc(p.short_description)}</p>${brewMeta(p)}</div>` +
@@ -519,7 +536,8 @@
       `<nav class="breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="${url("menu/")}">Menu</a></li>` +
       `<li><a href="${url("menu/?category=" + encodeURIComponent(category.slug))}">${esc(category.name)}</a></li>` +
       `<li><span aria-current="page">${esc(p.name)}</span></li></ol></nav>` +
-      `<article class="product-detail"><div class="product-detail__art"><img src="${illustrationSrc(p.illustration)}" alt="${esc(illustrationAlt(p.illustration))}" width="480" height="360"></div>` +
+      `<article class="product-detail"><div class="product-detail__art">` +
+      `${pictureImg(p.illustration, { alt: pictureAlt(p.illustration), width: 480, height: 360, sizes: "(max-width: 859px) 100vw, 580px" })}</div>` +
       `<div class="product-detail__info"><p class="eyebrow">${esc(category.name)}</p><h1>${esc(p.name)}</h1>` +
       `<p class="product-detail__price">${money(p.price)} ${p.is_available ? `<span class="badge badge--success">${icon("check")}Available</span>` : `<span class="badge badge--muted">Sold out</span>`}</p>` +
       `<p class="lede">${esc(p.short_description)}</p>${p.description ? `<p>${esc(p.description)}</p>` : ""}` +
@@ -554,7 +572,7 @@
     const disabledMinus = line.problem ? " disabled" : "";
     const disabledPlus = line.quantity >= maxQty || line.problem ? " disabled" : "";
     return `<li class="cart-line${line.problem ? " cart-line--problem" : ""}" data-line="${p.id}">` +
-      `<img class="cart-line__art" src="${illustrationSrc(p.illustration)}" alt="" width="96" height="72">` +
+      pictureImg(p.illustration, { cls: "cart-line__art", width: 96, height: 72, sizes: "96px" }) +
       `<div class="cart-line__info"><h3 class="cart-line__name">${p.is_listed ? `<a href="${productUrl(p)}">${name}</a>` : name}</h3>` +
       `<p class="muted">${money(p.price)} each</p>${line.problem ? `<p class="field__error">${icon("alert")}<span>${esc(line.problem)}</span></p>` : ""}</div>` +
       `<div class="qty-stepper">` +
@@ -969,7 +987,7 @@
       `<thead><tr><th scope="col">Product</th><th scope="col">Price</th><th scope="col">On menu</th><th scope="col">Available</th><th scope="col">Featured</th><th scope="col"><span class="visually-hidden">Actions</span></th></tr></thead><tbody>` +
       products.map((p) => {
         const edit = url("staff/products/edit/?id=" + p.id);
-        return `<tr><td data-label="Product"><div class="product-cell"><img src="${illustrationSrc(p.illustration)}" alt="" width="64" height="48">` +
+        return `<tr><td data-label="Product"><div class="product-cell">${pictureImg(p.illustration, { width: 64, height: 48, sizes: "64px" })}` +
           `<div><a href="${edit}"><strong>${esc(p.name)}</strong></a><br><span class="muted small">${esc(categoryName(p))}</span></div></div></td>` +
           `<td data-label="Price">${money(p.price)}</td>` +
           `<td data-label="On menu">${toggleButton(p, "is_listed", "On menu", "Hidden")}</td>` +
@@ -1049,7 +1067,7 @@
       if (product.is_listed) { onMenu.href = productUrl(product); onMenu.hidden = false; }
       $("[data-delete-link]").href = url("staff/products/delete/?id=" + product.id);
       const preview = $("[data-illustration-preview]");
-      preview.src = illustrationSrc(product.illustration);
+      preview.src = pictureSrc(product.illustration);
       preview.hidden = false;
     }
 

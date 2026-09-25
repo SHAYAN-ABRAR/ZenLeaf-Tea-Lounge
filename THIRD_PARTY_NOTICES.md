@@ -25,7 +25,16 @@ travel with the installed packages.
 
 The product illustrations, hero picture, logo, favicon and icons are SVG files drawn for this
 project; `tools/make_illustrations.py` regenerates the illustrations. The site copy and the demo menu
-were also written for this project.
+were also written for this project. The menu shows an item's illustration when it has no photo.
+
+## Menu photos
+
+The photos in `lounge/static/lounge/img/menu/photos/` are AI-generated. They were made in September
+2026 with ChatGPT's image generation (OpenAI), from prompts written for this project and listed in
+`docs/photo-prompts.md`. The original files carried Content Credentials (C2PA) naming ChatGPT as their
+source. `tools/prepare_photos.py` cropped them to 4:3 and saved them as WebP, which leaves that
+metadata out. The photos don't show real products, people or places. Their use is subject to
+OpenAI's terms of use.
 
 ## Earlier version
 

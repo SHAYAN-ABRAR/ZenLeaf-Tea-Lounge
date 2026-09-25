@@ -15,7 +15,7 @@
       <ul class="cart-lines">
         {% for line in lines %}
         <li class="cart-line{% if line.problem %} cart-line--problem{% endif %}">
-          <img class="cart-line__art" src="{% static line.product.illustration_path %}" alt="" width="96" height="72">
+          {% include "lounge/partials/product_picture.html" with product=line.product img_class="cart-line__art" alt="" width=96 height=72 sizes="96px" only %}
           <div class="cart-line__info">
             <h3 class="cart-line__name">{% if line.product.is_listed %}<a href="{{ line.product.get_absolute_url }}">{{ line.product.name }}</a>{% else %}{{ line.product.name }}{% endif %}</h3>
             <p class="muted">{{ line.product.price|money }} each</p>

@@ -6,7 +6,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.urls import reverse
 
-from .illustrations import ILLUSTRATION_CHOICES, illustration_alt
+from .illustrations import ILLUSTRATION_CHOICES, illustration_alt, photo_path as menu_photo_path, picture_alt
 
 
 def new_token():
@@ -74,6 +74,20 @@ class Product(models.Model):
     @property
     def illustration_alt(self):
         return illustration_alt(self.illustration)
+
+    @property
+    def photo_path(self):
+        """The large photo (960 px wide), or None when this picture has only a drawing."""
+        return menu_photo_path(self.illustration, 960)
+
+    @property
+    def photo_small_path(self):
+        return menu_photo_path(self.illustration, 480)
+
+    @property
+    def picture_alt(self):
+        """Alt text for the picture pages show: the photo's when there is one, otherwise the drawing's."""
+        return picture_alt(self.illustration)
 
     @property
     def notes_list(self):
